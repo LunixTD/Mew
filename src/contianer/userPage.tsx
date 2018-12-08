@@ -5,10 +5,12 @@ import {
   Text
 } from 'react-native'
 
-class ScrollPage extends Component {
+class UserPage extends Component {
   render() {
     return (
-      <View></View>
+      <View style={styles.container}>
+        <Text>UserPage</Text>
+      </View>
     )
   }
 }
@@ -16,7 +18,8 @@ class ScrollPage extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'blue'
   }
 })
 
-export default ScrollPage
+export default UserPage

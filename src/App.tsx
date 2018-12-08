@@ -1,10 +1,13 @@
 import React, {Component} from 'react'
 import {
+  StyleSheet,
   Text, 
   View
 } from 'react-native'
 import { Provider } from 'react-redux'
 import configureStore from './redux/store/store'
+
+import StatckNavigator from './navigator/navigator'
 
 const store = configureStore()
 
@@ -13,10 +16,14 @@ export default class App extends Component<Props> {
   render() {
     return (
       <Provider store={store}>
-        <View>
-          <Text>内容</Text>
-        </View>
+        <StatckNavigator />
       </Provider>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  }
+})
