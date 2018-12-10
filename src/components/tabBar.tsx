@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, ReactInstance, ClassicComponent } from 'react'
 import {
   StyleSheet,
   View,
@@ -8,9 +8,9 @@ import {
 } from 'react-native'
 import * as Animatable from 'react-native-animatable'
 
-import IconFont from '../components/iocn'
+import IconFont from './icon'
 
-import { deviceSize, iconSize_M, center } from '../config/styleConfig'
+import { deviceSize, ICON_SIZE_M, centering } from '../config/styleConfig'
 import { tabIconAnime } from '../config/animeConfig'
 
 const navItems = [{
@@ -85,12 +85,13 @@ interface ITabProps extends IBarProps {
 }
 
 class Tab extends Component<ITabProps, any> {
+  private anime: any
   constructor(props: ITabProps) {
     super(props)
   }
   
   handleTabPress = () => {
-    // this.refs.icon.tabIconIn()
+    this.anime.tabIconIn()
     if (this.props.index !== this.props.activeTab) {
       this.props.goToPage(this.props.index)
     }
@@ -105,8 +106,8 @@ class Tab extends Component<ITabProps, any> {
       >
         <View style={styles.tab}>
           <Animatable.View
-            ref='icon'
-            animation='tabIconAnime'
+            ref={(ref: any) => this.anime = ref}
+            animation={tabIconAnime}
             duration={300}
             easing={Easing.bezier(.6,3,1,.83)}
             useNativeDriver={true}
@@ -128,13 +129,13 @@ const styles = StyleSheet.create({
     // borderTopWidth: PX_1,    //下方tab时隔离用的上边框
     // borderTopColor: '#fff',
     overflow: 'hidden',
-    ...center,
+    ...centering,
   },
   icon: {
     position: 'absolute',
     flexDirection: 'row',
-    ...iconSize_M,
-    ...center,
+    ...ICON_SIZE_M,
+    ...centering,
   },
   bar_l: {
     left: 10
@@ -150,8 +151,8 @@ const styles = StyleSheet.create({
   },
   // tab
   tab: {
-    ...iconSize_M,
-    ...center,
+    ...ICON_SIZE_M,
+    ...centering,
   }
 })
 

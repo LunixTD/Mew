@@ -9,32 +9,35 @@ import {
 } from 'react-navigation'
 
 import ScrollPage from '../contianer/scrollPage'
+import Window from '../contianer/window'
 
 import CustomDrawerContentComponent from './customDrawerContentComponent'
 
 import { deviceSize } from '../config/styleConfig'
 
-// drawerView
-const drawerW = deviceSize.width * 0.85
-const DrawerNavigator = createDrawerNavigator({
-  ScrollPage: ScrollPage
-}, {
-  initialRouteName: 'ScrollPage',
-  drawerWidth: drawerW,
-  contentComponent: CustomDrawerContentComponent
-})
-
 // stackView
 const StackNavigator = createStackNavigator({
-  Home: {
-    screen: DrawerNavigator,
+  ScrollPage: {
+    screen: ScrollPage,
     navigationOptions: {
       header: null
     }
   }
 }, {
-  initialRouteName: 'Home',
+  initialRouteName: 'ScrollPage',
   headerMode: 'screen'
 })
 
-export default StackNavigator
+// drawerView
+const drawerW = deviceSize.width * 0.85
+const DrawerNavigator = createDrawerNavigator({
+  Home: Window
+}, {
+  initialRouteName: 'Home',
+  drawerWidth: drawerW,
+  contentComponent: CustomDrawerContentComponent
+})
+
+
+
+export { DrawerNavigator, StackNavigator }

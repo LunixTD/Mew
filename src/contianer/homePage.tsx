@@ -2,14 +2,24 @@ import React, { Component } from 'react'
 import {
   StyleSheet,
   View,
-  Text
+  Text,
+  SectionList
 } from 'react-native'
+
+import Section from '../components/section'
+
+import { BACKGROUND_G } from '../config/styleConfig'
 
 class HomePage extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>HomePage</Text>
+        <SectionList
+          initialNumToRender={1}
+          sections={[
+            {data:[{key: 'a'}], renderItem: () => <Section title='每日推荐' icon='recommend' />}
+          ]}
+        />
       </View>
     )
   }
@@ -18,7 +28,7 @@ class HomePage extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'red'
+    backgroundColor: BACKGROUND_G
   }
 })
 

@@ -7,7 +7,7 @@ import {
 import { Provider } from 'react-redux'
 import configureStore from './redux/store/store'
 
-import StatckNavigator from './navigator/navigator'
+import { DrawerNavigator } from './navigator/navigator'
 
 const store = configureStore()
 
@@ -16,7 +16,7 @@ export default class App extends Component<Props> {
   render() {
     return (
       <Provider store={store}>
-        <StatckNavigator />
+        <DrawerNavigator />
       </Provider>
     )
   }
