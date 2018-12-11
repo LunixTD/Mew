@@ -6,7 +6,7 @@ import {
   TouchableOpacity
 } from 'react-native'
 
-import TouchItem from './touchItem'
+import TouchItem from './touchableItem'
 import Svg from '../components/svg'
 
 import { GAP_SIZE_M, GAP_SIZE_S, GAP_SIZE_2, COL_NUM, FONT_COLOR_M } from '../config/styleConfig'
