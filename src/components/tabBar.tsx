@@ -7,6 +7,7 @@ import {
   Easing
 } from 'react-native'
 import * as Animatable from 'react-native-animatable'
+import NavigationService from '../common/js/navigationService'
 
 import IconFont from './icon'
 
@@ -40,11 +41,20 @@ class TabBar extends Component<IBarProps, any> {
     super(props)
   }
 
+  handleMenuPress = () => {
+    NavigationService.drawerNavigate('open')
+  }
+
+  handleSearchPress = () => {
+    NavigationService.stackNavigate('SearchPage')
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
+          onPress={this.handleMenuPress}
         >
           <View style={[styles.icon, styles.bar_l]}>
             <IconFont name="menu" size={26} color="#fff" />
@@ -67,6 +77,7 @@ class TabBar extends Component<IBarProps, any> {
         </View>
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
+          onPress={this.handleSearchPress}
         >
           <View style={[styles.icon, styles.bar_r]}>
             <IconFont name="search" size={26} color="#fff" />

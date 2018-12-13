@@ -10,6 +10,7 @@ import {
 
 import ScrollPage from '../contianer/scrollPage'
 import Window from '../contianer/window'
+import SearchPage from '../contianer/searchPage'
 
 import CustomDrawerContentComponent from './customDrawerContentComponent'
 
@@ -19,6 +20,12 @@ import { deviceSize } from '../config/styleConfig'
 const StackNavigator = createStackNavigator({
   ScrollPage: {
     screen: ScrollPage,
+    navigationOptions: {
+      header: null
+    }
+  },
+  SearchPage: {
+    screen: SearchPage,
     navigationOptions: {
       header: null
     }

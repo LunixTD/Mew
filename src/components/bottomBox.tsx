@@ -6,6 +6,9 @@ import {
   Image,
   TouchableNativeFeedback
 } from 'react-native'
+import { Action, Dispatch } from 'redux'
+import { connect } from 'react-redux'
+import { oepnPlayerAction } from '../redux/actions/player.action'
 import Svg, { Circle } from 'react-native-svg'
 import IconFont from '../components/icon'
 
@@ -25,6 +28,7 @@ class PlayCtrBtn extends Component {
     return (
       <TouchableNativeFeedback
         background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
+        
       >
         <View style={[styles.iconConSize, styles.boxControl]}>
           <View style={[styles.iconCtrContainer, this.status === 'pause' ? null : styles.hideBtn ]}>
@@ -45,10 +49,24 @@ class PlayCtrBtn extends Component {
   }
 }
 
-class BottomBox extends Component {
+interface IProps {
+  oepnPlayerAction: () => Action
+}
+
+class BottomBox extends Component<IProps, any> {
+  constructor(props: IProps) {
+    super(props)
+  }
+
+  onBoxPress = () => {
+    this.props.oepnPlayerAction()
+  }
+
   render() {
     return (
-      <TouchableNativeFeedback>
+      <TouchableNativeFeedback
+        onPress={this.onBoxPress}
+      >
         <View style={styles.container}>
           <View style={styles.boxLeft}>
             <View>
@@ -141,4 +159,13 @@ const styles = StyleSheet.create({
   }
 })
 
-export default BottomBox
+function mapDispatchToProps(dispatch: Dispatch<Action>) {
+  return {
+    oepnPlayerAction: () => dispatch(oepnPlayerAction())
+  }
+}
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(BottomBox)
