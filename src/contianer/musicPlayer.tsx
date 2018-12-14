@@ -28,12 +28,6 @@ class MusicPlayer extends Component<IProps, any> {
 
   componentDidMount() {
     this.props.watchPlayerAction()
-    BackHandler.addEventListener('hardwareBackPress', () => {
-      if (this.props.playerStatus) {
-        this.props.closePlayerAction()
-        return true
-      }
-    })
   }
 
   render() {

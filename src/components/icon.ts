@@ -16,6 +16,9 @@ const glyphMap = {
   'list': '\ue640',
   'play': '\ue77e',
   'pause': '\ue79f',
+  // header
+  'back': '\ue636',
+  'share': '\ue63e',
 }
 
  export default createIconSet(glyphMap, 'iconfont')

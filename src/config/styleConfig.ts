@@ -15,7 +15,7 @@ const NUM = w / 100
 export const PX_1 = 1 / deviceSize.scale
 
 // 状态栏高度
-export const statusBarHeight = StatusBar.currentHeight
+export const statusBarHeight: any = StatusBar.currentHeight
 
 // flex下居中代码
 export const centering = { justifyContent: 'center', alignItems: 'center' } as FlexStyle

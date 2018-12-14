@@ -8,10 +8,12 @@ import { Provider } from 'react-redux'
 import configureStore from './redux/store/store'
 import NavigationService from './common/js/navigationService'
 import { DrawerNavigator } from './navigator/navigator'
+// import './common/js/backHandler'
 
 import MusicPlayer from './contianer/musicPlayer'
 
-const store = configureStore()
+
+export const store = configureStore()
 
 export default class App extends Component {
   render() {

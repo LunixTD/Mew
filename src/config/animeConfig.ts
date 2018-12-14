@@ -3,6 +3,7 @@ import { Animated } from 'react-native'
 import * as Animatable from 'react-native-animatable'
 
 // musicPlayer页面动画
+// disc动画
 export const musicPlayerAnime = new Animated.Value(0)
 export const musicPlayerCtr = {
   open: Animated.spring(musicPlayerAnime, {
@@ -18,6 +19,8 @@ export const musicPlayerCtr = {
     useNativeDriver: true
   })
 }
+
+
 
 // scrollPage页面相关动画
 // tabIcon动画
