@@ -1,19 +1,24 @@
 import React, { Component } from 'react'
 import {
-  StyleSheet,
-  View,
-  Text
+  StyleSheet
 } from 'react-native'
-
+import { connect } from 'react-redux'
 import Video from 'react-native-video'
-
 import refService from '../common/js/refService'
 
 class Audio extends Component {
+  onLoad = (data: any) => {
+    
+  }
+
+  onProgress = (data: any) => {
+    
+  }
+
   render() {
     return (
       <Video
-        source={this.props.mList[this.props.currentIndex].mSource}
+        source={require('../../assets/music/Locked-Away.mp3')}
         ref={(ref) => {
           refService.setRefBox('video', ref)
         }}
@@ -21,13 +26,12 @@ class Audio extends Component {
         volume={1.0}
         resizeMode="cover"
         repeat={false}
-        paused={this.props.status === 'pause' ? true : false}      
-        style={styles.fillSize}
+        // paused={this.props.status === 'pause' ? true : false}
         playInBackground={true}
         playWhenInactive={true}
-        onLoad={this.props.onLoad}
-        onProgress={this.props.onProgress}
-        onEnd={this.props.onEnd}
+        onLoad={this.onLoad}
+        onProgress={this.onProgress}
+        // onEnd={this.onEnd}
       />
     )
   }
@@ -38,5 +42,7 @@ const styles = StyleSheet.create({
     flex: 1,
   }
 })
+
+// function 
 
 export default Audio

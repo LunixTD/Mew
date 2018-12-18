@@ -5,94 +5,55 @@ import {
   Text,
   Image,
   Animated,
-  TextInput,
   BackHandler,
   TouchableNativeFeedback
 } from 'react-native'
 import { Action, Dispatch } from 'redux'
 import { connect } from 'react-redux'
-import { oepnPlayerBoxAction, closePlayerBoxAction, watchPlayerBoxAction } from '../redux/actions/player.action'
+import { oepnPlayerAction, closePlayerAction, watchPlayerAction } from '../redux/actions/player.action'
 import { store } from '../App'
 import Svg, { Circle } from 'react-native-svg'
 import IconFont from '../components/icon'
-import Slider from 'react-native-slider'
-
-import Video from '../components/player'
 import Header from '../components/header'
 import FadeBg from '../components/fadeBg'
-import Banner from '../components/banner'
-import { UserCtr, PlayerCtr } from '../components/playerBtn'
-import PlayerSlider from '../components/playerSlider'
 
 import { PX_1, deviceSize, THEME_COLOR, centering, filling, statusBarHeight } from '../config/styleConfig'
-import { musicPlayerAnime, bottomBoxAnime } from '../config/animeConfig'
+import { musicPlayerAnime } from '../config/animeConfig'
 import { IPlayerState } from '../config/interfaces'
 
 interface IProps {
   playerStatus: boolean,
-  oepnPlayerBoxAction: () => Action,
-  closePlayerBoxAction: () => Action,
-  watchPlayerBoxAction: () => Action,
+  oepnPlayerAction: () => Action,
+  closePlayerAction: () => Action,
+  watchPlayerAction: () => Action,
 }
 const { width, height } = deviceSize
 const discWidth = width * 0.85
-const discContainerH = (height - 50 - statusBarHeight) * 0.7
-const ctrGroupH = (height - 50 - statusBarHeight) * 0.3
-const discTop = (discContainerH - width) * 0.5
+// const discDeltaX = (width - discWidth) * 0.5 - 6
+// const discDeltaY = (height - 50 - 6) * 0.14
+const discContainerH = (height - 70) * 0.7
 const discDeltaX = (width - discWidth) * 0.5
 const discDeltaY = (discContainerH - discWidth) * 0.5
-const discBoxX = width * 0.5 - 26
-const discBoxY = width * 0.5 + discTop + statusBarHeight +25
-
-const banner_list = [
-  require('../../assets/cover/lwa1.jpg'),
-  require('../../assets/cover/lwa2.jpg'),
-  require('../../assets/cover/lwa3.jpg'),
-  require('../../assets/cover/lwa4.jpg')
-]
-
-const banner_config = {
-  loop: true,
-  autoplay: false,
-  horizontal: true,
-  style: {
-    width: width,
-    height: width
-  }
-}
-
+const discBoxX = discWidth * 0.5 - 26
+const discBoxY = discWidth * 0.5 + 50 + statusBarHeight - 20 - 5
 class BottomLinshi extends Component<IProps, any> {
   constructor(props: IProps) {
     super(props)
   }
 
   componentDidMount() {
-    this.props.watchPlayerBoxAction()
+    this.props.watchPlayerAction()
     BackHandler.addEventListener('hardwareBackPress', () => {
-      const { playerBoxStatus } = store.getState().player
-      if(playerBoxStatus) {
-        store.dispatch(closePlayerBoxAction())
+      const { playerStatus } = store.getState().player
+      if(playerStatus) {
+        store.dispatch(closePlayerAction())
         return true
       }
     })
   }
 
   onBoxPress = () => {
-    this.props.oepnPlayerBoxAction()
-  }
-
-  renderBanner = () => {
-    return (
-      <Banner config={banner_config}>
-      {
-        banner_list.map((item, index) => (
-          <View key={index} style={styles.swiperItem}>
-            <Image style={styles.swiperImg} source={item} resizeMode='cover'/>
-          </View>
-        ))
-      }
-      </Banner>
-    )
+    this.props.oepnPlayerAction()
   }
 
   render() {
@@ -108,27 +69,18 @@ class BottomLinshi extends Component<IProps, any> {
           }]
         }]}
       >
-        {/* 播放器 */}
-        <Video />
         {/* 背景渐变图片 */}
-        <Animated.View style={[filling, {
-          opacity: bottomBoxAnime.interpolate({
-            inputRange: [0, 0.8, 1],
-            outputRange: [1, 0.5, 1]
-          }),
-        }]}>
-          <FadeBg />
-        </Animated.View>
+        <FadeBg />
         {/* header */}
         <Animated.View style={[styles.absolutePosition, {
-          opacity: bottomBoxAnime.interpolate({
+          opacity: musicPlayerAnime.interpolate({
             inputRange: [0, 1],
             outputRange: [0, 1]
           }),
           transform: [{
-            translateX: bottomBoxAnime.interpolate({
+            translateX: musicPlayerAnime.interpolate({
               inputRange: [0, 1],
-              outputRange: [0, width]
+              outputRange: [-width, 0]
             })
           }]
         }]}>
@@ -140,12 +92,12 @@ class BottomLinshi extends Component<IProps, any> {
           onPress={this.onBoxPress}
         >
           <Animated.View style={[styles.boxContainer, {
-            opacity: bottomBoxAnime.interpolate({
-              inputRange: [0, 0.8, 1],
-              outputRange: [1, 0.05, 0]
+            opacity: musicPlayerAnime.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 0]
             }),
             transform: [{
-              translateX: bottomBoxAnime.interpolate({
+              translateX: musicPlayerAnime.interpolate({
                 inputRange: [0, 1],
                 outputRange: [0, width]
               })
@@ -173,35 +125,31 @@ class BottomLinshi extends Component<IProps, any> {
         </TouchableNativeFeedback>
         {/* disc */}
         <View style={styles.discContainer}>
-          <Animated.View
-            style={[styles.discCover, {
-              transform: [{
-                translateX: musicPlayerAnime.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [-discBoxX, 0]
-                })
-              }, {
-                translateY: musicPlayerAnime.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [-discBoxY, 0]
-                })
-              }, {
-                scale: musicPlayerAnime.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [40 / discWidth, 1]
-                })
-              }]
-            }]}
-          >
-            {this.renderBanner()}
-          </Animated.View>
+          <View style={styles.discContainer}>
+            <Animated.Image
+              source={require('../../assets/cover/lwa1.jpg')}
+              style={[styles.discCover, {
+                transform: [{
+                  translateX: musicPlayerAnime.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-discBoxX, discDeltaX]
+                  })
+                }, {
+                  translateY: musicPlayerAnime.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-discBoxY, discDeltaY]
+                  })
+                }, {
+                  scale: musicPlayerAnime.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [40 / discWidth, 1]
+                  })
+                }]
+              }]}
+            ></Animated.Image>
+          </View>
         </View>
-        {/* 用户相关操作控件 */}
-        <View style={styles.controllerBox}>
-          <UserCtr />
-          <PlayerSlider />
-          <PlayerCtr />
-        </View>
+
       </Animated.View>
     )
   }
@@ -241,7 +189,6 @@ class PlayCtrBtn extends Component {
   }
 }
 
-const discContainerHStatus = discContainerH >= width
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
@@ -249,21 +196,19 @@ const styles = StyleSheet.create({
     top: height - 50,
     width: width,
     height: height,
-    paddingTop: statusBarHeight + 50,
+    paddingTop: statusBarHeight,
     backgroundColor: 'transparent',
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center'
   },
   absolutePosition: {
-    position: 'absolute',
+    position: 'relative',
     width: width,
-    top: statusBarHeight,
-    left: -width,
     height: 50,
     flexDirection: 'row',
     ...centering,
-    backgroundColor: 'rgba(0,0,0,0.001)',
+    backgroundColor: 'rgba(0,0,0,0.01)',
     zIndex: 8
   },
   boxContainer: {
@@ -293,9 +238,10 @@ const styles = StyleSheet.create({
   discCover: {
     position: 'absolute',
     left: 0,
-    top: discContainerHStatus ? discTop : 0,
-    width: width,
-    height: width,
+    top: 0,
+    width: discWidth,
+    height: discWidth,
+    borderRadius: 3,
     overflow: 'hidden'
   },
   boxInfo: {
@@ -338,27 +284,9 @@ const styles = StyleSheet.create({
   discContainer: {
     position: 'relative',
     width: width,
-    height: discContainerHStatus ? discContainerH : width,
+    height: (height - 70) * 0.7,
     // backgroundColor: 'blue',
     zIndex: 88
-  },
-  swiperItem: {
-    width: width,
-    height: width,
-    flexDirection: 'row',
-    ...centering
-  },
-  swiperImg: {
-    width: discWidth,
-    height: discWidth,
-    borderRadius: 3,
-  },
-  // 按钮组、slider
-  controllerBox: {
-    width: width,
-    height: ctrGroupH,
-    // 下方按钮组等空间上移一段位置以便协调disc和控件之间的空隙
-    marginTop: -ctrGroupH * 0.35 * 0.2
   }
 })
 
@@ -376,8 +304,8 @@ function mapStateToProps(
 
 function mapDispatchToProps(dispatch: Dispatch<Action>) {
   return {
-    watchPlayerBoxAction: () => dispatch(watchPlayerBoxAction()),
-    oepnPlayerBoxAction: () => dispatch(oepnPlayerBoxAction())
+    watchPlayerAction: () => dispatch(watchPlayerAction()),
+    oepnPlayerAction: () => dispatch(oepnPlayerAction())
   }
 }
 

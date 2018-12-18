@@ -12,7 +12,7 @@ interface ISwiper {
   style: object,
   loop: boolean,
   autoplay: boolean,
-  autoplayTimeout: number,
+  autoplayTimeout?: number,
   horizontal: boolean,
   onIndexChanged?: () => {}
 }

@@ -4,9 +4,11 @@ import {
   View,
   Text,
   Image,
-  SectionList
+  SectionList,
+  LayoutAnimation,
+  UIManager
 } from 'react-native'
-
+UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true)
 import Section from '../components/section'
 import Banner from '../components/banner'
 
@@ -32,10 +34,14 @@ const banner_config = {
     width: width,
     height: bannerHeight
   },
-  imgList: banner_list
+  // imgList: banner_list
 }
 
-class HomePage extends Component {
+class HomePage extends Component<any, any> {
+  constructor(props: any) {
+    super(props)
+  }
+
   renderBanner = () => {
     return (
       <View>
@@ -54,6 +60,7 @@ class HomePage extends Component {
     )
   }
   render() {
+    console.log('渲染')
     return (
       <View style={styles.container}>
         <SectionList
@@ -63,6 +70,7 @@ class HomePage extends Component {
             {data:[{key: 'b'}], renderItem: () => <Section title='每日推荐' icon='recommend' />}
           ]}
         />
+        
       </View>
     )
   }

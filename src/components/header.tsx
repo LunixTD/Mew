@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 import { Dispatch, Action } from 'redux'
 import { connect } from 'react-redux'
-import { closePlayerAction } from '../redux/actions/player.action'
+import { closePlayerBoxAction } from '../redux/actions/player.action'
 import LinearGradient from 'react-native-linear-gradient'
 import ScrollText from '../components/scrollText'
 
@@ -16,20 +16,20 @@ import { deviceSize, statusBarHeight, centering, ICON_SIZE_M } from '../config/s
 
 const { width } = deviceSize
 interface IProps {
-  closePlayerAction: () => Action
+  closePlayerBoxAction: () => Action
 }
 
 class Header extends Component<IProps, any> {
   handleBack = () => {
-    this.props.closePlayerAction()
+    this.props.closePlayerBoxAction()
   }
 
   render() {
     return (
       <View style={styles.header}>
         <TouchableNativeFeedback
-          background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
           onPress={this.handleBack}
+          background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
         >
           <View style={styles.icon}>
             <IconFont name="back" size={22} color="#fff" />
@@ -48,7 +48,7 @@ class Header extends Component<IProps, any> {
           background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
         >
           <View style={styles.icon}>
-            <IconFont name="share" size={22} color="#fff" />
+            <IconFont name="share" size={26} color="#fff" />
           </View>
         </TouchableNativeFeedback>
         <View style={styles.line}>
@@ -65,17 +65,12 @@ class Header extends Component<IProps, any> {
 
 const styles = StyleSheet.create({
   header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    height: 50 + statusBarHeight,
+    height: 50,
     width: width,
-    paddingTop: statusBarHeight,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 5,
-    // backgroundColor: 'blue'
+    backgroundColor: 'rgba(0,0,0,0)'
   },
   icon: {
     flexDirection: 'row',
@@ -130,7 +125,7 @@ const styles = StyleSheet.create({
 
 function mapDispatchToProps(dispatch: Dispatch<Action>) {
   return {
-    closePlayerAction:() => dispatch(closePlayerAction())
+    closePlayerBoxAction:() => dispatch(closePlayerBoxAction())
   }
 }
 

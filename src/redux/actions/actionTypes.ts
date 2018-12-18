@@ -1,8 +1,11 @@
 // player
-export const PLAYER_WATCHER = 'PLAYER_WATCHER'
+export const PLAYER_BOX_WATCHER = 'PLAYER_BOX_WATCHER'
+export const PLAYER_BOX_STATUS = 'PLAYER_BOX_STATUS'
+export const PLAYER_BOX_OPEN = 'PLAYER_BOX_OPEN'
+export const PLAYER_BOX_CLOSE = 'PLAYER_BOX_CLOSE'
+
 export const PLAYER_STATUS = 'PLAYER_STATUS'
-export const PLAYER_OPEN = 'PLAYER_OPEN'
-export const PLAYER_CLOSE = 'PLAYER_CLOSE'
+export const PLAYER_CURRENTTIME = 'PLAYER_CURRENTTIME'
 
 // linshi
 export const TMP = 'TMP'
