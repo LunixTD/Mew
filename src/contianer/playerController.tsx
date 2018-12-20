@@ -3,15 +3,45 @@ import {
   StyleSheet,
   View,
   Image,
+  Animated,
   TouchableWithoutFeedback,
 } from 'react-native'
-import { deviceSize, statusBarHeight } from '../config/styleConfig'
+import { Dispatch, Action } from 'redux'
+import { connect } from 'react-redux'
+import { changePlayerStatusAction } from '../redux/actions/player.action'
+import PlayerSlider from '../components/playerSlider'
 
+import { bottomBoxAnime } from '../config/animeConfig'
+import { IPlayerState } from '../config/interfaces'
+import { deviceSize, statusBarHeight } from '../config/styleConfig'
 import { relate_btn_ary, player_btn_ary } from '../config/assetsConfig'
 
-const { width, height } = deviceSize
+class PlayerController extends Component<IPlayerCtr> {
+  render() {
+    return (
+      <Animated.View style={[styles.controllerBox, {
+        opacity: bottomBoxAnime.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1]
+        }),
+        transform: [{
+          translateY: bottomBoxAnime.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, -100]
+          })
+        }]
+      }]}>
+        <UserCtr />
+        <PlayerSlider />
+        <PlayerCtr
+          {...this.props}
+        />
+      </Animated.View>
+    )
+  }
+}
 
-export class UserCtr extends Component<any, any> {
+class UserCtr extends Component<any, any> {
   constructor(props: any) {
     super(props)
     this.state = {
@@ -72,7 +102,12 @@ export class UserCtr extends Component<any, any> {
   }
 }
 
-export class PlayerCtr extends Component<any, any> {
+type PlayerStatusType = 'playing' | 'pause'
+interface IPlayerCtr {
+  status: PlayerStatusType,
+  changePlayerStatusAction: (status: PlayerStatusType) => Action
+}
+class PlayerCtr extends Component<IPlayerCtr, any> {
   constructor(props: any) {
     super(props)
     this.state = {
@@ -86,7 +121,7 @@ export class PlayerCtr extends Component<any, any> {
       case 'mode':
         return this.state.mode
       case 'play':
-        return this.state.play
+        return this.props.status
       case 'prev':
       case 'next':
       case 'info':
@@ -101,7 +136,11 @@ export class PlayerCtr extends Component<any, any> {
         // this.setState({ love: 'loved' })
         break
       case 'play':
-        // this.setState({ download: 'downloaded' })
+        if (this.props.status === 'pause') {
+          this.props.changePlayerStatusAction('playing')
+        } else {
+          this.props.changePlayerStatusAction('pause')
+        }
         break
       case 'comment':
         // this.setState({ comment: 'comments' })
@@ -164,6 +203,17 @@ class UserBtn extends Component<IPlayerBtn, any> {
     }
   }
 
+  shouldComponentUpdate(nextProps: any, nextState: any) {
+    var renderStatus = false
+    if (this.state.pressStatus !== nextState.pressStatus) {
+      renderStatus = true
+    }
+    if (this.props.status !== nextProps.status) {
+      renderStatus = true
+    }
+    return renderStatus
+  }
+
   onPressIn = () => {
     this.setState({ pressStatus: true })
   }
@@ -212,10 +262,22 @@ class UserBtn extends Component<IPlayerBtn, any> {
     )
   }
 }
-
+const { width, height } = deviceSize
+const ctrGroupH = (height - 50 - statusBarHeight) * 0.3
 const btn_group_height = (height - statusBarHeight - 50) * 0.3
 const userBtnBoxH = btn_group_height * 0.35
 const playerBtnBoxH = btn_group_height * 0.45
+const styles = StyleSheet.create({
+  // 按钮组、slider
+  controllerBox: {
+    position: 'relative',
+    top: 100,
+    width: width,
+    height: ctrGroupH,
+    // 下方按钮组等空间上移一段位置以便协调disc和控件之间的空隙
+    marginTop: -ctrGroupH * 0.35 * 0.2
+  }
+})
 const userBtnStyles = StyleSheet.create({
   // 按钮组-用户相关按钮
   ctr: {
@@ -268,3 +330,26 @@ const playerBtnStyles = StyleSheet.create({
     opacity: 0
   }
 })
+
+function mapStateToProps(
+  {
+    player: {
+      status
+    }
+  }: { player: IPlayerState }
+) {
+  return {
+    status
+  }
+}
+
+function mapDispatchToProps(dispatch: Dispatch<Action>) {
+  return {
+    changePlayerStatusAction: (status: PlayerStatusType) => dispatch(changePlayerStatusAction(status))
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PlayerController)

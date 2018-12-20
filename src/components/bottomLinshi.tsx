@@ -11,27 +11,27 @@ import {
 } from 'react-native'
 import { Action, Dispatch } from 'redux'
 import { connect } from 'react-redux'
-import { oepnPlayerBoxAction, closePlayerBoxAction, watchPlayerBoxAction } from '../redux/actions/player.action'
+import { openPlayerBoxAction, closePlayerBoxAction, watchPlayerBoxAction, changePlayerStatusAction } from '../redux/actions/player.action'
 import { store } from '../App'
 import Svg, { Circle } from 'react-native-svg'
 import IconFont from '../components/icon'
-import Slider from 'react-native-slider'
 
-import Video from '../components/player'
+import Audio from '../components/player'
 import Header from '../components/header'
 import FadeBg from '../components/fadeBg'
 import Banner from '../components/banner'
-import { UserCtr, PlayerCtr } from '../components/playerBtn'
-import PlayerSlider from '../components/playerSlider'
+import PlayerController from '../contianer/playerController'
 
 import { PX_1, deviceSize, THEME_COLOR, centering, filling, statusBarHeight } from '../config/styleConfig'
 import { musicPlayerAnime, bottomBoxAnime } from '../config/animeConfig'
 import { IPlayerState } from '../config/interfaces'
+import refService from '../common/js/refService';
 
 interface IProps {
-  playerStatus: boolean,
-  oepnPlayerBoxAction: () => Action,
-  closePlayerBoxAction: () => Action,
+  // playerStatus: boolean,
+  duration: number,
+  openPlayerBoxAction: () => Action,
+  // closePlayerBoxAction: () => Action,
   watchPlayerBoxAction: () => Action,
 }
 const { width, height } = deviceSize
@@ -66,6 +66,10 @@ class BottomLinshi extends Component<IProps, any> {
     super(props)
   }
 
+  shouldComponentUpdate() {
+    return false
+  }
+
   componentDidMount() {
     this.props.watchPlayerBoxAction()
     BackHandler.addEventListener('hardwareBackPress', () => {
@@ -78,7 +82,7 @@ class BottomLinshi extends Component<IProps, any> {
   }
 
   onBoxPress = () => {
-    this.props.oepnPlayerBoxAction()
+    this.props.openPlayerBoxAction()
   }
 
   renderBanner = () => {
@@ -109,12 +113,12 @@ class BottomLinshi extends Component<IProps, any> {
         }]}
       >
         {/* 播放器 */}
-        <Video />
+        <Audio />
         {/* 背景渐变图片 */}
         <Animated.View style={[filling, {
           opacity: bottomBoxAnime.interpolate({
             inputRange: [0, 0.8, 1],
-            outputRange: [1, 0.5, 1]
+            outputRange: [0, 0.5, 1]
           }),
         }]}>
           <FadeBg />
@@ -197,49 +201,67 @@ class BottomLinshi extends Component<IProps, any> {
           </Animated.View>
         </View>
         {/* 用户相关操作控件 */}
-        <View style={styles.controllerBox}>
-          <UserCtr />
-          <PlayerSlider />
-          <PlayerCtr />
-        </View>
+        <PlayerController />
+        
       </Animated.View>
     )
   }
 }
-
-class PlayCtrBtn extends Component {
-  private status: string
-  private percentage: number
+type PlayerStatus = 'playing' | 'pause'
+const PlayCtrBtn = connect(
+  ({ player: { status } }: {player: IPlayerState}) => ({ status }),
+  (dispatch) => ({
+    changePlayerStatusAction: (status: PlayerStatus) => dispatch(changePlayerStatusAction(status))
+  })
+) (
+  class PlayCtrBtn extends Component<any> {
+    private status: string
+    // private percentage: number
+    private _circle: any
   
-  constructor(props: any) {
-    super(props)
-    this.status = 'pause'
-    this.percentage = 0.68
-  }
+    constructor(props: any) {
+      super(props)
+      this.status = 'pause'
+    }
+  
+    componentDidMount() {
+      refService.setRefBox('circle', this._circle)
+    }
+  
+    onPress = () => {
+      if (this.props.status === 'pause') {
+        this.props.changePlayerStatusAction('playing')
+      } else {
+        this.props.changePlayerStatusAction('pause')
+      }
+    }
 
-  render() {
-    return (
-      <TouchableNativeFeedback
-        background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
-      >
-        <View style={[styles.iconConSize, styles.boxControl]}>
-          <View style={[styles.iconCtrContainer, this.status === 'pause' ? null : styles.hideBtn ]}>
-            <IconFont name="play" size={18} color='rgba(51, 51, 51, 0.8)' />
+    render() {
+      return (
+        <TouchableNativeFeedback
+          onPress={this.onPress}
+          background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
+        >
+          <View style={[styles.iconConSize, styles.boxControl]}>
+            <View style={[styles.iconCtrContainer, this.props.status === 'pause' ? null : styles.hideBtn ]}>
+              <IconFont name="play" size={18} color='rgba(51, 51, 51, 0.8)' />
+            </View>
+            <View style={[styles.iconCtrContainer, this.props.status === 'pause' ? styles.hideBtn : null ]}>
+              <IconFont name="pause" size={18} color={THEME_COLOR} />
+            </View>
+            <Svg height="50" width="50" style={[styles.boxControl, styles.circleAngle]}>
+              <Circle cx="25" cy="25" r="15" fill="none" stroke={this.props.status === 'pause' ? 'rgba(51, 51, 51, 0.8)' : 'rgba(51, 51, 51, 0.2)'} strokeWidth="1.5" strokeLinecap="round" />
+              <Circle cx="25" cy="25" r="15" fill="none" stroke={THEME_COLOR} strokeWidth="1.5" strokeLinecap="round" strokeDasharray={[2 * Math.PI * 15 * 0, 10000]} 
+              ref={(ref) => this._circle = ref}
+              />
+            </Svg>
           </View>
-          <View style={[styles.iconCtrContainer, this.status === 'pause' ? styles.hideBtn : null ]}>
-            <IconFont name="pause" size={18} color={THEME_COLOR} />
-          </View>
-          <Svg height="50" width="50" style={[styles.boxControl, styles.circleAngle]}>
-            <Circle cx="25" cy="25" r="15" fill="none" stroke={this.status === 'pause' ? 'rgba(51, 51, 51, 0.8)' : 'rgba(51, 51, 51, 0.2)'} strokeWidth="1.5" strokeLinecap="round" />
-            <Circle cx="25" cy="25" r="15" fill="none" stroke={THEME_COLOR} strokeWidth="1.5" strokeLinecap="round" strokeDasharray={[2 * Math.PI * 15 * this.percentage, 10000]} 
-            // ref={(ref) => this._circle = ref}
-            />
-          </Svg>
-        </View>
-      </TouchableNativeFeedback>
-    )
+        </TouchableNativeFeedback>
+      )
+    }
   }
-}
+)
+
 
 const discContainerHStatus = discContainerH >= width
 const styles = StyleSheet.create({
@@ -352,36 +374,29 @@ const styles = StyleSheet.create({
     width: discWidth,
     height: discWidth,
     borderRadius: 3,
-  },
-  // 按钮组、slider
-  controllerBox: {
-    width: width,
-    height: ctrGroupH,
-    // 下方按钮组等空间上移一段位置以便协调disc和控件之间的空隙
-    marginTop: -ctrGroupH * 0.35 * 0.2
   }
 })
 
 function mapStateToProps(
   {
     player: {
-      playerStatus
+      duration
     }
   }: { player: IPlayerState }
 ) {
   return {
-    playerStatus
+    duration
   }
 }
 
 function mapDispatchToProps(dispatch: Dispatch<Action>) {
   return {
     watchPlayerBoxAction: () => dispatch(watchPlayerBoxAction()),
-    oepnPlayerBoxAction: () => dispatch(oepnPlayerBoxAction())
+    openPlayerBoxAction: () => dispatch(openPlayerBoxAction())
   }
 }
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(BottomLinshi)
