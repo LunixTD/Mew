@@ -270,12 +270,10 @@ const playerBtnBoxH = btn_group_height * 0.45
 const styles = StyleSheet.create({
   // 按钮组、slider
   controllerBox: {
-    position: 'relative',
-    top: 100,
     width: width,
     height: ctrGroupH,
     // 下方按钮组等空间上移一段位置以便协调disc和控件之间的空隙
-    marginTop: -ctrGroupH * 0.35 * 0.2
+    marginTop: -ctrGroupH * 0.35 * 0.2 + 100
   }
 })
 const userBtnStyles = StyleSheet.create({

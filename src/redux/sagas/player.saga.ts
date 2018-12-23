@@ -3,6 +3,8 @@ import { all, takeEvery, take, put, call, select } from 'redux-saga/effects'
 import * as types from '../actions/actionTypes'
 import { musicPlayerCtr, bottomBoxCtr } from '../../config/animeConfig'
 import refService from '../../common/js/refService'
+import axios from 'axios'
+import * as api from '../../services/api'
 
 const playerSelector = (state: any) => state.player
 
@@ -10,6 +12,7 @@ function* playerOpenAndClose() {
   while(true) {
     // 播放界面打开
     yield take(types.PLAYER_BOX_OPEN)
+    yield put({ type: types.DRAWER_LOCK_MODE, payload: { mode: 'locked-closed' } })
     yield put({ type: types.PLAYER_BOX_STATUS, payload: { status: true } })
     // let anime = yield call(InteractionManager.createInteractionHandle)
     yield call(musicPlayerCtr.open.start)
@@ -22,6 +25,7 @@ function* playerOpenAndClose() {
     // anime = yield call(InteractionManager.createInteractionHandle)
     yield call(musicPlayerCtr.close.start)
     yield call(bottomBoxCtr.close.start)
+    yield put({ type: types.DRAWER_LOCK_MODE, payload: { mode: 'unlocked' } })
     // yield call(InteractionManager.clearInteractionHandle, anime)
   }
 }

@@ -1,3 +1,6 @@
+// common
+export const DRAWER_LOCK_MODE = 'DRAWER_LOCK_MODE'
+
 // player
 export const PLAYER_BOX_WATCHER = 'PLAYER_BOX_WATCHER'
 export const PLAYER_BOX_STATUS = 'PLAYER_BOX_STATUS'
@@ -12,7 +15,3 @@ export const SET_DURATION = 'SET_DURATION'
 export const SLIDER_WATCHER = 'SLIDER_WATCHER'
 export const SET_SLIDER_VALUE = 'SET_SLIDER_VALUE'
 export const SET_SLIDER_VALUE_END = 'SET_SLIDER_VALUE_END'
-
-
-// linshi
-export const TMP = 'TMP'

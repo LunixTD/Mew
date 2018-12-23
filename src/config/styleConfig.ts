@@ -58,3 +58,4 @@ export const FONT_SIZE_M = 12
 export const FONT_SIZE_L = 14
 export const FONT_SIZE_EL = 16
 export const FONT_SIZE_ML = 18
+export const FONT_SIZE_TITLE4 = 26

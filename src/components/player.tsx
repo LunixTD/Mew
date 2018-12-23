@@ -1,7 +1,4 @@
 import React, { Component } from 'react'
-import {
-  StyleSheet
-} from 'react-native'
 import { Dispatch, Action } from 'redux'
 import { connect } from 'react-redux'
 import { IPlayerState } from '../config/interfaces'

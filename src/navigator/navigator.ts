@@ -38,7 +38,12 @@ const StackNavigator = createStackNavigator({
 // drawerView
 const drawerW = deviceSize.width * 0.85
 const DrawerNavigator = createDrawerNavigator({
-  Home: Window
+  Home: {
+    screen: Window,
+    navigationOptions: ({ screenProps }: any) => ({
+      drawerLockMode: screenProps ? screenProps.drawerLockMode : 'unlocked'
+    })
+  }
 }, {
   initialRouteName: 'Home',
   drawerWidth: drawerW,

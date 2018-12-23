@@ -27,13 +27,14 @@ class ScrollPage extends Component {
         <ScrollableTabView
           initialPage={0}
           tabBarPosition='top'
+          prerenderingSiblingsNumber={1}
           renderTabBar={(props: any) => (
             <TabBar {...props}/>
           )}
         >
+          <UserPage />
           <HomePage />
           <MsgPage />
-          <UserPage />
         </ScrollableTabView>
       </View>
     )

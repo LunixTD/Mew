@@ -7,3 +7,9 @@ export interface IPlayerState {
   sliderValue: number,
   isSliding: boolean
 }
+
+// 通用状态接口
+type LockMode = 'unlocked' | 'locked-open' | 'locked-closed'
+export interface ICommonState {
+  drawerLockMode: LockMode
+}

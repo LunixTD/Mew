@@ -6,13 +6,18 @@ import {
 import { StackNavigator } from '../navigator/navigator'
 import NavigationService from '../common/js/navigationService'
 
-import BottomLinshi from '../components/bottomLinshi'
+import BottomLinshi from './musicPlayer'
 
 class Window extends Component {
+  shouldComponentUpdate() {
+    return false
+  }
+
   render() {
+    console.log('渲染window')
     return (
       <View style={styles.container}>
-        <StackNavigator 
+        <StackNavigator
           ref={(navigatorRef: any)=> {
             NavigationService.setTopLevelNavigator(navigatorRef, 'stack')
           }}

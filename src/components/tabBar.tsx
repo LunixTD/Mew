@@ -15,16 +15,16 @@ import { deviceSize, ICON_SIZE_M, centering } from '../config/styleConfig'
 import { tabIconAnime } from '../config/animeConfig'
 
 const navItems = [{
+    tabName: '我的',
+    tabIconName: 'tab-user',
+    tabIconColor: '#fff'
+  }, {
     tabName: '主页',
     tabIconName: 'tab-home',
     tabIconColor: '#fff'
   }, {
     tabName: '消息',
     tabIconName: 'tab-msg',
-    tabIconColor: '#fff'
-  }, {
-    tabName: '我的',
-    tabIconName: 'tab-user',
     tabIconColor: '#fff'
   }
 ]

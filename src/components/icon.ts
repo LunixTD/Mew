@@ -19,6 +19,11 @@ const glyphMap = {
   // header
   'back': '\ue636',
   'share': '\ue63e',
+  // userPage
+  'localMusic': '\ue623',
+  'history': '\ue62e',
+  'downloaded': '\ue610',
+  'myFavor': '\ue627',
 }
 
  export default createIconSet(glyphMap, 'iconfont')

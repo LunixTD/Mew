@@ -60,7 +60,7 @@ class HomePage extends Component<any, any> {
     )
   }
   render() {
-    console.log('渲染')
+    console.log('homePage渲染')
     return (
       <View style={styles.container}>
         <SectionList
@@ -70,7 +70,6 @@ class HomePage extends Component<any, any> {
             {data:[{key: 'b'}], renderItem: () => <Section title='每日推荐' icon='recommend' />}
           ]}
         />
-        
       </View>
     )
   }

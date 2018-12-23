@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0)'
+    backgroundColor: 'rgba(0,0,0,0.0001)'
   },
   icon: {
     flexDirection: 'row',

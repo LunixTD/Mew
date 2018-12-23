@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux'
 import player from './player.reducer'
-import tmp from './tmp.reducer'
+import common from './common.reducer'
 
 export default combineReducers({
   player,
-  tmp
+  common
 })
