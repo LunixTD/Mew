@@ -24,6 +24,14 @@ const glyphMap = {
   'history': '\ue62e',
   'downloaded': '\ue610',
   'myFavor': '\ue627',
+  'album-arrow': '\ue6ac',
+  'album-config': '\ue63d',
+  // albumPage
+  'album-cmt': '\ue600',
+  'album-share': '\ue603',
+  'album-dld': '\ue601',
+  'album-multi': '\ue602',
+  'album-more': '\ue604',
 }
 
  export default createIconSet(glyphMap, 'iconfont')

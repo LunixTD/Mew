@@ -18,6 +18,7 @@ import { relate_btn_ary, player_btn_ary } from '../config/assetsConfig'
 
 class PlayerController extends Component<IPlayerCtr> {
   render() {
+    console.log('playerContainer渲染')
     return (
       <Animated.View style={[styles.controllerBox, {
         opacity: bottomBoxAnime.interpolate({

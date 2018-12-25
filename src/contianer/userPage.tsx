@@ -5,12 +5,21 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  TouchableNativeFeedback
+  TouchableNativeFeedback,
+  TouchableWithoutFeedback,
+  Animated,
+  ScrollView
 } from 'react-native'
+import { Dispatch, Action } from 'redux'
+import { connect } from 'react-redux'
+import navigationService from '../common/js/navigationService'
+import { getUserAlbumAction } from '../redux/actions/album.action'
 
+import { ListItem } from './albumPage'
 import IconFont from '../components/icon'
 
 import * as styleConfig from '../config/styleConfig'
+import { IAlbumState, IAlbum } from '../config/interfaces'
 
 const listItems = [
   {
@@ -28,14 +37,63 @@ const listItems = [
   }, {
     itemName: '我喜欢的音乐',
     itemIcon: 'myFavor',
-    isGap: false
+    isGap: true
   }
 ]
 
-class UserPage extends Component {
+const arrowAnime = new Animated.Value(0)
+const arrowCtr = {
+  open: Animated.spring(arrowAnime, {
+    toValue: 0,
+    tension: 80,
+    friction: 12,
+    useNativeDriver: true
+  }),
+  close: Animated.spring(arrowAnime, {
+    toValue: 1,
+    tension: 80,
+    friction: 12,
+    useNativeDriver: true
+  }),
+}
+
+interface IUserPageProps {
+  getUserAlbumAction: () => Action
+}
+class UserPage extends Component<IUserPageProps, any> {
+  constructor(props: any) {
+    super(props)
+    this.state = {
+      albumBoxStatus: true
+    }
+  }
+
+  componentDidMount() {
+    this.props.getUserAlbumAction()
+  }
+
+  handleAlbumBoxTouch = () => {
+    if (this.state.albumBoxStatus) {
+      arrowCtr.close.start()
+      this.setState({
+        albumBoxStatus: false
+      })
+    } else {
+      arrowCtr.open.start()
+      this.setState({
+        albumBoxStatus: true
+      })
+    }
+  }
+
+  handleConfiPress = () => {
+    // alert('配置歌单')
+    navigationService.stackNavigate('AlbumPage')
+  }
+
   render() {
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <View style={styles.userInfoBox}>
           <View style={styles.infoTop}>
             <Text style={styles.nikeName}>LunixTD</Text>
@@ -80,10 +138,82 @@ class UserPage extends Component {
             </TouchableNativeFeedback>
           ))}
         </View>
-      </View>
+        <TouchableWithoutFeedback
+          onPress={this.handleAlbumBoxTouch}
+          style={styles.albumBox}
+        >
+          <View style={styles.switch}>
+            <View style={styles.boxLeft}>
+              <Animated.View
+                style={{
+                  transform: [{
+                    rotate: arrowAnime.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ['0deg', '-90deg']
+                    })
+                  }]
+                }}
+              >
+                <IconFont
+                  style={styles.iconLeft}
+                  name='album-arrow'
+                  size={18}
+                  color='white'
+                />
+              </Animated.View>
+              <Text style={styles.albumText}>创建的歌单</Text>
+              <Text style={styles.albumText}>(num)</Text>
+            </View>
+            <TouchableWithoutFeedback
+              onPress={this.handleConfiPress}
+            >
+              <IconFont
+                style={styles.iconRight}
+                name='album-config'
+                size={18}
+                color='white'
+              />
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+        {
+          !this.state.albumBoxStatus ? null : <AlbumList />
+        }
+      </ScrollView>
     )
   }
 }
+
+const AlbumList = connect(
+  ({ album: { userAlbum } }: { album: IAlbumState }) => ({ userAlbum }),
+  null
+)(
+  class AlbumList extends Component<any> {
+
+    render() {
+      const props = this.props
+      const AlbumListLength = props.userAlbum.length
+      return (
+        <View style={styles.albumContainer}>
+          {
+            AlbumListLength <= 0 ? null : 
+            props.userAlbum.map((item: IAlbum, index: number) => (
+              <ListItem
+                key={index}
+                type='album'
+                index={index}
+                length={AlbumListLength}
+                name={item.name}
+                trackCount={item.trackCount}
+                coverImgUrl={require('../../assets/cover/lwa2.jpg')}
+              />
+            ))
+          }
+        </View>
+      )
+    }
+  }
+)
 
 const { width, height } = styleConfig.deviceSize
 const avatarW = width * 0.3
@@ -166,7 +296,51 @@ const styles = StyleSheet.create({
     fontSize: styleConfig.FONT_SIZE_L,
     marginLeft: 15,
     marginRight: 15,
-  }
+  },
+  // 歌单列表
+  albumBox: {
+    flex: 1,
+  },
+  switch: {
+    width: width,
+    backgroundColor: styleConfig.THEME_COLOR,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop:5,
+    paddingBottom: 5,
+    
+  },
+  boxLeft: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  iconLeft: {
+    paddingLeft: 5,
+    paddingRight: 5
+  },
+  iconRight: {
+    marginRight: 10,
+  },
+  albumText: {
+    fontSize: styleConfig.FONT_SIZE_M,
+    color: 'white'
+  },
+  albumContainer: {
+    flex: 1,
+    paddingBottom: styleConfig.musicBoxH + styleConfig.PX_1,
+    backgroundColor: styleConfig.BACKGROUND_M
+  },
 })
 
-export default UserPage
+function mapDispatchToProps(dispatch: Dispatch<Action>) {
+  return {
+    getUserAlbumAction: () => dispatch(getUserAlbumAction())
+  }
+}
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(UserPage)

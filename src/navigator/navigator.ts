@@ -5,12 +5,12 @@ import {
 import { 
   createDrawerNavigator,
   createStackNavigator,
-  createMaterialTopTabNavigator
 } from 'react-navigation'
 
 import ScrollPage from '../contianer/scrollPage'
 import Window from '../contianer/window'
 import SearchPage from '../contianer/searchPage'
+import AlbumPage from '../contianer/albumPage'
 
 import CustomDrawerContentComponent from './customDrawerContentComponent'
 
@@ -26,6 +26,12 @@ const StackNavigator = createStackNavigator({
   },
   SearchPage: {
     screen: SearchPage,
+    navigationOptions: {
+      header: null
+    }
+  },
+  AlbumPage: {
+    screen: AlbumPage,
     navigationOptions: {
       header: null
     }

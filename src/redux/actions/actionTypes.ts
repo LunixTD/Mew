@@ -15,3 +15,7 @@ export const SET_DURATION = 'SET_DURATION'
 export const SLIDER_WATCHER = 'SLIDER_WATCHER'
 export const SET_SLIDER_VALUE = 'SET_SLIDER_VALUE'
 export const SET_SLIDER_VALUE_END = 'SET_SLIDER_VALUE_END'
+
+// sheet
+export const GET_USER_ALBUM = 'GET_USER_ALBUM'
+export const SET_USER_ALBUM = 'SET_USER_ALBUM'

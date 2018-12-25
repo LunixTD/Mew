@@ -17,7 +17,7 @@ import Svg, { Circle } from 'react-native-svg'
 import IconFont from '../components/icon'
 
 import Audio from '../components/player'
-import Header from '../components/header'
+import { PlayerHeader } from '../components/header'
 import FadeBg from '../components/fadeBg'
 import Banner from '../components/banner'
 import PlayerController from './playerController'
@@ -136,7 +136,7 @@ class BottomLinshi extends Component<IProps, any> {
             })
           }]
         }]}>
-          <Header />
+          <PlayerHeader />
         </Animated.View>
         
         {/* bottomBox */}
@@ -282,7 +282,6 @@ const styles = StyleSheet.create({
     height: 50,
     flexDirection: 'row',
     ...centering,
-    backgroundColor: 'rgba(0,0,0,0.005)',
     zIndex: 8
   },
   boxContainer: {

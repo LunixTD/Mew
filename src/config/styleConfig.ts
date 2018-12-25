@@ -27,6 +27,9 @@ export const COL_NUM = 3
 // banner长宽比
 export const BANNER_RADIO =  1.74
 
+// 底部musicbox高度
+export const musicBoxH = 50
+
 // Icon尺寸
 export const ICON_SIZE_M = { width: 36, height: 36 }
 

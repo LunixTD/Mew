@@ -3,6 +3,7 @@ package com.mew;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.cmcewen.blurview.BlurViewPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.horcrux.svg.SvgPackage;
@@ -28,6 +29,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new BlurViewPackage(),
             new LinearGradientPackage(),
             new ReactVideoPackage(),
             new SvgPackage(),
