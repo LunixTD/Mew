@@ -2,15 +2,14 @@ import React, { Component } from 'react'
 import {
   StyleSheet,
   View,
-  TextInput,
-  Slider
+  TextInput
 } from 'react-native'
 import { Dispatch, Action } from 'redux'
 import { connect } from 'react-redux'
 import { isSlidingAction, setSliderValueAction, sliderWatcherAction, setSliderValueEndAction } from '../redux/actions/player.action'
 import { IPlayerState } from '../config/interfaces'
-// import Slider from 'react-native-slider'
-import { THEME_COLOR, statusBarHeight, deviceWidth, deviceHeight } from '../config/styleConfig'
+import Slider from 'react-native-slider'
+import { deviceSize, THEME_COLOR, statusBarHeight } from '../config/styleConfig'
 import refService from '../common/js/refService'
 
 
@@ -26,7 +25,6 @@ class PlayerSlider extends Component<IProps> {
   private _time: any
   private _slider: any
   private value: number = 0
-  private isSliding: boolean = false
   componentDidMount() {
     this.props.sliderWatcherAction()
     refService.setRefBox('time', this._time)
@@ -41,10 +39,6 @@ class PlayerSlider extends Component<IProps> {
   }
 
   onValueChange = (value: number) => {
-    if (this.isSliding === false) {
-      this.props.isSlidingAction(true)
-      this.isSliding = true
-    }
     if (value !== this.value) {
       this.props.setSliderValueAction(value)
       this.value = value
@@ -56,7 +50,6 @@ class PlayerSlider extends Component<IProps> {
   }
 
   onSlidingComplete = (value: number) => {
-    this.isSliding = false
     this.props.setSliderValueEndAction(value)
   }
 
@@ -75,14 +68,12 @@ class PlayerSlider extends Component<IProps> {
           ref={(el: any) => this._slider = el}
           style={styles.slider}
           value={0}
-          step={1/this.props.duration}
-          // trackStyle={styles.track}
-          // thumbStyle={styles.thumb}
-          thumbTintColor={THEME_COLOR}
-          minimumTrackTintColor='rgba(211,58,50,0.6)'
+          trackStyle={styles.track}
+          thumbStyle={styles.thumb}
+          minimumTrackTintColor={THEME_COLOR}
           maximumTrackTintColor='rgba(255,255,255,0.3)'
           onValueChange={this.onValueChange}
-          // onSlidingStart={this.onSlidingStart}
+          onSlidingStart={this.onSlidingStart}
           onSlidingComplete={this.onSlidingComplete}
         />
         <TextInput
@@ -95,7 +86,8 @@ class PlayerSlider extends Component<IProps> {
     )
   }
 }
-const ctrGroupH = (deviceHeight - 50 - statusBarHeight) * 0.3
+const { width, height } = deviceSize
+const ctrGroupH = (height - 50 - statusBarHeight) * 0.3
 const styles = StyleSheet.create({
   // Slider
   sliderBox: {
@@ -105,9 +97,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   slider: {
-    width: deviceWidth * 0.8,
-    marginLeft: -7,
-    marginRight: -7,
+    width: width * 0.7,
   },
   track: {
     height: 3,
@@ -127,8 +117,8 @@ const styles = StyleSheet.create({
   },
   // 时间
   time: {
-    // marginLeft: 2,
-    // marginRight: 2,
+    marginLeft: 5,
+    marginRight: 5,
     marginBottom: -1,
     fontSize: 11,
     color: 'rgba(255, 255, 255, 0.8)',

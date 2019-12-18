@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import {
   StyleSheet,
   View,
+  StatusBar,
   Text
 } from 'react-native'
 
@@ -18,8 +19,13 @@ class ScrollPage extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar
+          translucent={true}
+          backgroundColor='transparent'
+          barStyle='light-content'
+        />
         <ScrollableTabView
-          initialPage={1}
+          initialPage={0}
           tabBarPosition='top'
           prerenderingSiblingsNumber={1}
           renderTabBar={(props: any) => (

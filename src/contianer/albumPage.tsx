@@ -6,191 +6,116 @@ import {
   Animated,
   Image,
   Text,
-  findNodeHandle,
-  InteractionManager,
   TouchableOpacity,
-  TouchableNativeFeedback,
-  FlatList,
-  requireNativeComponent,
-  NativeModules,
-  DeviceEventEmitter
+  TouchableNativeFeedback
 } from 'react-native'
-
-import { Dispatch, Action } from 'redux'
-import { connect } from 'react-redux'
-import { putAlbumToPlaylistAction } from '../redux/actions/playlist.action'
-import { NavigationParams } from 'react-navigation'
-import { BlurView } from 'react-native-blur'
 import { AlbumHeader } from '../components/header'
 import IconFont from '../components/icon'
 
-import { IAlbum, ITrack, IAlbumState, IAlbumInfo } from '../config/interfaces'
-import { BACKGROUND_M, PX_1, centering, statusBarHeight, deviceWidth, deviceHeight } from '../config/styleConfig'
-import { get } from 'lodash'
+import { IAlbum, ITrack } from '../config/interfaces'
+import { BACKGROUND_M, PX_1, deviceSize, centering } from '../config/styleConfig'
 
-var RCTCusListView = requireNativeComponent('RCTCusListView')
-var RCTRecycleView = requireNativeComponent('RCTRecycleView')
-var RCTCusScrollView = requireNativeComponent('RCTCusScrollView')
-var RCTCusViewGroup = requireNativeComponent('RCTCusViewGroup')
-var RCTCusLinearLayout = requireNativeComponent('RCTCusLinearLayout')
+const { width, height } = deviceSize
 
-// const mListAry = [
-//   {name: '土豆之歌', author: '土豆'},
-//   {name: '土豆之歌', author: '土豆'},
-//   {name: '土豆之歌', author: '土豆'},
-//   {name: '土豆之歌', author: '土豆'},
-//   {name: '土豆之歌', author: '土豆'},
-//   {name: '土豆之歌', author: '土豆'},
-//   {name: '土豆之歌', author: '土豆'},
-//   {name: '土豆之歌', author: '土豆'},
-//   {name: '土豆之歌', author: '土豆'},
-//   {name: '土豆之歌', author: '土豆'},
-// ]
+const mListAry = [
+  {name: '土豆之歌', author: '土豆'},
+  {name: '土豆之歌', author: '土豆'},
+  {name: '土豆之歌', author: '土豆'},
+  {name: '土豆之歌', author: '土豆'},
+  {name: '土豆之歌', author: '土豆'},
+  {name: '土豆之歌', author: '土豆'},
+  {name: '土豆之歌', author: '土豆'},
+  {name: '土豆之歌', author: '土豆'},
+  {name: '土豆之歌', author: '土豆'},
+  {name: '土豆之歌', author: '土豆'},
+]
 
-// const albumOtherIcon = [
-//   require('../../assets/icon/listPlay.png'),
-//   require('../../assets/icon/collect.png'),
-//   require('../../assets/icon/infoMore.png')
-// ]
-// const AlbumCtr = connect(
-//   mapStateToProps,
-//   null
-// ) (
-//   class AlbumCtr extends Component<IAlbumListProps, any> {
-//     private albumInfo: any
-//     constructor(props: any) {
-//       super(props)
-//       this.albumInfo = {}
-//     }
+const cover = require('../../assets/cover/lwa1.jpg')
+const albumOtherIcon = [
+  require('../../assets/icon/listPlay.png'),
+  require('../../assets/icon/collect.png'),
+  require('../../assets/icon/infoMore.png')
+]
 
-//     componentWillReceiveProps(nextProps: any) {
-//       this.albumInfo = nextProps.albumInfo
-//     }
+class AlbumInfo extends Component {
+  render() {
+    return (
+      <View style={styles.albumInfo}>
+        <Image
+          source={require('../../assets/icon/defaultAlbumCover.png')}
+          style={[styles.bgCover, {zIndex: -15}]}
+        />
+        <Image
+          source={cover}
+          blurRadius={100}
+          style={[styles.bgCover, {zIndex: -10}]}
+        />
+        <View style={styles.infoContent}>
+          <View style={styles.infoCover}>
+            <Image 
+              source={cover}
+              resizeMode='cover'
+              style={styles.cover}
+            />
+          </View>
+          <View style={styles.infoText}>
+            <Text style={styles.albumTitle}>标题标题标题标题标题标题标题标题标题标题</Text>
+            <TouchableOpacity style={styles.user}>
+              <Image
+                source={require('../../assets/user/user.jpg')}
+                style={styles.userAvatar}
+              />
+              <Text style={styles.userName}>我的名字叫土豆 ></Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
-//     render() {
-//       const { shareCount, trackCount, commentCount, cloudTrackCount } = this.albumInfo
-//       return (
-//         <View>
-//           <View style={styles.albumCtr}>
-//             <TouchableOpacity style={styles.ctrItem}>
-//               <IconFont name='album-cmt' size={20} color='white' />
-//               <Text style={styles.ctrText}>{commentCount === ( 0 || undefined ) ? '评论' : commentCount}</Text>
-//             </TouchableOpacity>
-//             <TouchableOpacity style={styles.ctrItem}>
-//               <IconFont name='album-share' size={20} color='white' />
-//               <Text style={styles.ctrText}>{shareCount === ( 0 || undefined ) ? '分享' : shareCount}</Text>
-//             </TouchableOpacity>
-//             <TouchableOpacity style={styles.ctrItem}>
-//               <IconFont name='album-dld' size={20} color='white' />
-//               <Text style={styles.ctrText}>下载</Text>
-//             </TouchableOpacity>
-//             <TouchableOpacity style={styles.ctrItem}>
-//               <IconFont name='album-multi' size={20} color='white' />
-//               <Text style={styles.ctrText}>多选</Text>
-//             </TouchableOpacity>
-//           </View>
-            
-//           <View style={styles.listCtr}>
-//             <TouchableNativeFeedback>
-//               <View style={styles.playAll}>
-//                 <Image
-//                   source={albumOtherIcon[0]}
-//                   style={styles.playAllIcon}
-//                   resizeMode='cover'
-//                 />
-//                 <Text style={styles.albumText}>播放全部</Text>
-//                 <Text style={styles.textCount}>(共{trackCount}首)</Text>
-//               </View>
-//             </TouchableNativeFeedback>
-//             <TouchableNativeFeedback>
-//               <View style={styles.collect}>
-//                 <Image
-//                   source={albumOtherIcon[1]}
-//                   style={styles.collectIcon}
-//                   resizeMode='cover'
-//                 />
-//                 <Text style={[styles.albumText, styles.textCollect]}>收藏 ({cloudTrackCount})</Text>
-//               </View>
-//             </TouchableNativeFeedback>
-//           </View>
-//         </View>
-//       )
-//     }
-//   }
-// )
-
-
-// interface IAlbumInfoProps {
-//   album: IAlbum
-// }
-// class AlbumInfo extends Component<IAlbumInfoProps, any> {
-//   private backgroundImage: any
-//   constructor(props: IAlbumInfoProps) {
-//     super(props)
-//     this.state = {
-//       viewRef: 0
-//     }
-//   }
-
-//   imgLoaded = () => {
-//     this.setState({
-//       viewRef: findNodeHandle(this.backgroundImage)
-//     })
-//   }
-
-//   render() {
-//     const props = this.props
-//     const { name, coverImgUrl, creator } = props.album
-//     return (
-//       <View style={styles.albumInfo}>
-//         {/* <Image
-//           source={require('../../assets/icon/defaultAlbumCover.png')}
-//           style={[styles.bgCover, {zIndex: -15}]}
-//         /> */}
-//         <Image
-//           ref={(ref) => { this.backgroundImage = ref }}
-//           source={{uri: coverImgUrl}}
-//           // loadingIndicatorSource={require('../../assets/icon/defaultAlbumCover.png')}
-//           // blurRadius={100}
-//           style={[styles.bgCover, {zIndex: -10}]}
-//           fadeDuration={0}
-//           // onLoadEnd={this.imgLoaded}
-//         />
+        <View style={styles.albumCtr}>
+          <TouchableOpacity style={styles.ctrItem}>
+            <IconFont name='album-cmt' size={20} color='white' />
+            <Text style={styles.ctrText}>123</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.ctrItem}>
+            <IconFont name='album-share' size={20} color='white' />
+            <Text style={styles.ctrText}>343</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.ctrItem}>
+            <IconFont name='album-dld' size={20} color='white' />
+            <Text style={styles.ctrText}>下载</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.ctrItem}>
+            <IconFont name='album-multi' size={20} color='white' />
+            <Text style={styles.ctrText}>多选</Text>
+          </TouchableOpacity>
+        </View>
         
-//         {/* <BlurView
-//           style={[styles.bgCover, {zIndex: -1}]}
-//           viewRef={this.state.viewRef}
-//           blurType='light'
-//           blurAmount={100}
-//         /> */}
-
-//         <View style={styles.infoContent}>
-//           <View style={styles.infoCover}>
-//             <Image 
-//               source={{uri: coverImgUrl}}
-//               resizeMode='cover'
-//               style={styles.cover}
-//               fadeDuration={0}
-//             />
-//           </View>
-//           <View style={styles.infoText}>
-//             <Text style={styles.albumTitle}>{name}</Text>
-//             <TouchableOpacity style={styles.user}>
-//               <Image
-//                 source={{uri: creator.avatarUrl + '?param=100y100'} || require('../../assets/user/user.jpg')}
-//                 style={styles.userAvatar}
-//               />
-//               <Text style={styles.userName}>{creator.nickname} ></Text>
-//             </TouchableOpacity>
-//           </View>
-//         </View>
-//         <AlbumCtr />
-//       </View> 
-//     )
-//   }
-// }
-
-var nativeModule = NativeModules.OpenNativeModule;
+        <View style={styles.listCtr}>
+          <TouchableNativeFeedback>
+            <View style={styles.playAll}>
+              <Image
+                source={albumOtherIcon[0]}
+                style={styles.playAllIcon}
+                resizeMode='cover'
+              />
+              <Text style={styles.albumText}>播放全部</Text>
+              <Text style={styles.textCount}>(共XX首)</Text>
+            </View>
+          </TouchableNativeFeedback>
+          <TouchableNativeFeedback>
+            <View style={styles.collect}>
+              <Image
+                source={albumOtherIcon[1]}
+                style={styles.collectIcon}
+                resizeMode='cover'
+              />
+              <Text style={[styles.albumText, styles.textCollect]}>收藏 (4321)</Text>
+            </View>
+          </TouchableNativeFeedback>
+        </View>
+      </View> 
+    )
+  }
+}
 
 interface IListItemProps {
   type: 'track' | 'album',
@@ -198,49 +123,44 @@ interface IListItemProps {
   length: number,
   name: string,
   author?: string,
-  trackCount?: number
+  trackCount?: number,
+  albumName?: string,
   coverImgUrl?: any,
-  onItemPress: () => any
 }
 export class ListItem extends Component<IListItemProps> {
   private indexStyle: any
   private itemMore: any
-  private itemH: any
   constructor(props: any) {
     super(props)
     switch(this.props.type) {
       case 'track':
         this.indexStyle = styles.trackIndex
         this.itemMore = styles.itemMoreTrack
-        this.itemH = styles.itemTrackHeight
         break
       case 'album':
         this.indexStyle = styles.albumIndex
         this.itemMore = styles.itemMoreAlbum
-        this.itemH = styles.itemAlbumHeight
         break
     }
   }
-
   render() {
     const props = this.props
     return (
-      <TouchableNativeFeedback
-        onPress={props.onItemPress}
-      >
-        <View style={[styles.listItem]}>
+      <TouchableNativeFeedback>
+        <View style={styles.listItem}>
           <View style={[this.indexStyle, styles.flexCenter]}>
             {
               !props.coverImgUrl ?
-              <Text style={styles.indexText}>{props.index + 1}</Text> : 
+              <Text style={styles.indexText}>{props.index + 1}</Text> :
               <Image
                 style={styles.listImg}
                 resizeMode='cover'
-                source={{uri: props.coverImgUrl + '?param=300y300'}}
+                source={require('../../assets/cover/lwa3.jpg')}
               />
             }
+            
           </View>
-          <View style={[styles.listItem, this.itemH, props.index + 1 === props.length ? null : styles.borderLine]}>
+          <View style={[styles.listItem, props.index + 1 === props.length ? null : styles.borderLine]}>
             <View style={styles.itemInfo}>
               <Text style={[styles.albumText, styles.infoTitle]} ellipsizeMode='tail' numberOfLines={1}>{props.name}</Text>
               {
@@ -261,218 +181,96 @@ export class ListItem extends Component<IListItemProps> {
   }
 }
 
-// interface IAlbumListProps {
-//   albumInfo: IAlbumInfo
-// }
-// const AlbumList = connect(
-//   mapStateToProps,
-//   null
-// ) (
-//   class AlbumList extends Component<IAlbumListProps, any> {
-//     private tracks: ITrack[]
-//     constructor(props: any) {
-//       super(props)
-//       this.tracks = []
-//     }
+class AlbumList extends Component<any, any> {
+  constructor(props: any) {
+    super(props)
+    this.state = {
+      content: false
+    }
+  }
 
-//     componentWillReceiveProps(nextProps: any) {
-//       this.tracks = nextProps.albumInfo.tracks
-//       // console.log(this.tracks)
-//     }
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        content: true
+      })
+    }, 400)
+  }
 
-//     _keyExtractor = (item: any) => item.id + ''
-
-//     render() {
-//       const tracksLength = this.tracks.length
-//       return (
-//         <View style={styles.albumList}>
-//           {
-//             tracksLength === 0 ? null : 
-//             // <ScrollView style={styles.list}>
-//             // {
-//               // <RecyclerviewList
-//               //   style={{flex: 1}}
-//               //   dataSource={dataSource}
-//               //   itemAnimatorEnabled={false}
-//               //   renderItem={(item: ITrack, index: number) => (
-//               //     <ListItem
-//               //       type='track'
-//               //       index={index}
-//               //       length={this.tracks.length}
-//               //       onItemPress={this.onItemPress}
-//               //       {...item}
-//               //     />
-//               //   )}
-//               // />
-//               <RCTCusListView
-//                 ref='RCTCusListView'
-//                 data={JSON.stringify(this.tracks)}
-//                 // tracksLength * ( 55 + PX_1)
-//                 style={{height: tracksLength * ( 55 + PX_1), width: deviceWidth}}
-//               >
-//               </RCTCusListView>
-              
-//               // this.tracks.map((item: ITrack, index: number) => (
-//               //   <ListItem
-//               //     key={index}
-//               //     type='track'
-//               //     index={10}
-//               //     length={this.tracks.length}
-//               //     onItemPress={this.onItemPress}
-//               //     {...item}
-//               //   />
-//               // ))
-//               // <FlatList
-//               //   data={this.tracks}
-//               //   initialNumToRender={20}
-//               //   keyExtractor={this._keyExtractor}
-//               //   getItemLayout={(data, index) => (
-//               //     {length: 55, offset: 55 * index, index}
-//               //   )}
-//               //   renderItem={({item, index}) => (
-//               //     <ListItem
-//               //       type='track'
-//               //       index={index}
-//               //       length={this.tracks.length}
-//               //       onItemPress={this.onItemPress}
-//               //       {...item}
-//               //     />
-//               //   )}
-//               // />
-//               // <NativeLargeList
-//               //   data={[{items: this.tracks}]}
-//               //   heightForIndexPath={() => 55}
-//               //   renderIndexPath={(item:any) => (
-//               //     <ListItem
-//               //       type='track'
-//               //       index={10}
-//               //       length={this.tracks.length}
-//               //       onItemPress={this.onItemPress}
-//               //       {...item}
-//               //     />
-//               //   )}
-//               // />
-//             // }
-//             // </ScrollView>
-//           }
-//         </View>
-//       )
-//     }
-//   }
-// )
-
-interface IAlbumPage {
-  // albumInfo: IAlbumInfo,
-  navigation: NavigationParams,
-  putAlbumToPlaylistAction: (index: number) => Action
+  render() {
+    return (
+      <View style={styles.albumList}>
+        {
+          !this.state.content ? null : 
+          <View style={styles.list}>
+          {
+            mListAry.map((item: ITrack, index) => (
+              <ListItem
+                key={index}
+                type='track'
+                index={index}
+                length={mListAry.length}
+                name={item.name}
+                author={item.author}
+              />
+            ))
+          }
+          </View>
+        }
+      </View> 
+    )
+  }
 }
-class AlbumPage extends Component<IAlbumPage, any> {
-  private creator: any
-  private mData: any
-  private prevInfo: any
-  private emitter: any
+
+class AlbumPage extends Component<any, any> {
   constructor(props: any) {
     super(props)
     this.state = {
       opacity: new Animated.Value(0),
+      content: true
     }
-    this.mData = {}
-    this.prevInfo = {}
   }
 
-  // componentWillReceiveProps(nextProps: any) {
-  //   const album = nextProps.albumInfo
-  //   if (album.tracks.length !== 0) {
-  //     const { tracks, commentCount, shareCount } = album
-  //     this.mData = {
-  //       tracks,
-  //       commentCount,
-  //       shareCount
-  //     }
-  //   }
-  // }
-
-  componentWillMount() {
-    // 初始化页面时优先加载的数据
-    const albumPrevInfo = this.props.navigation.getParam('album')
-    this.creator = get(albumPrevInfo, 'creator', false)
-    const coverImgUrl = get(albumPrevInfo, 'coverImgUrl', albumPrevInfo.picUrl)
-    this.prevInfo = {
-      coverImgUrl,
-      title: albumPrevInfo.name,
-      author: this.creator ? this.creator.nickname : null,
-      avatar: this.creator ? this.creator.avatarUrl : null,
-      // playCount,
-      // subscribedCount
-    }
-
-    this.addNativeEventListener()
-  }
-
-  addNativeEventListener = () => {
-    // 设置原生动作监听
-    this.emitter = [
-      DeviceEventEmitter.addListener('onItemClick', (e) => this.props.putAlbumToPlaylistAction(parseInt(e.itemIndex))),
-      DeviceEventEmitter.addListener('onIconMoreClick', (e) => alert(parseInt(e.itemIndex)))
-    ]
-  }
-
-  // componentDidMount() {
-  //   const { navigation } = this.props
-  //   const album = navigation.getParam('album')
-    // const interactionHandler = getInteractionHandler('navigate')
-    // InteractionManager.clearInteractionHandle(interactionHandler)
-    // setTimeout(() => {
-        // this.props.getAlbumInfoAction(album.id)
-      // })
-    // }, 2000)
-  // }
-
-  componentWillUnmount() {
-    // 卸载原生动作监听
-    for (let i = 0; i < this.emitter.length; i++) {
-      DeviceEventEmitter.removeSubscription(this.emitter[i])
-    }
+  componentDidMount() {
+    // this.interactable.snapTo({ index: 1 })
+    // InteractionManager.runAfterInteractions(() => {
+    //   this.setState({
+    //     content: true
+    //   })
+    // })
   }
 
   render() {
-    console.log('AlbumPage渲染')
-    // console.log(this.mData.tracks)
-    const props = this.props
-    const album = props.navigation.getParam('album')
-    const coverImgUrl = get(album, 'coverImgUrl', album.picUrl)
     return (
       <View style={styles.container}>
         <AlbumHeader
-          source={coverImgUrl}
+          source={cover}
           opacity={this.state.opacity.interpolate({
-            inputRange: [0, albumInfoHeight - topGap],
+            inputRange: [0, albumInfoHeight - 70],
             outputRange: [0, 1]
           })}
-          interactHeight={albumInfoHeight - topGap}
+          interactHeight={albumInfoHeight - 70}
         />
-        {
-          // this.mData.tracks === undefined ? null : 
-          <RCTRecycleView
-            style={{flex: 1}}
-            prevInfo={JSON.stringify(this.prevInfo)}
-            // data={this.mData == {} ? null : JSON.stringify(this.mData)}
-            onScroll={
-              Animated.event([{
-                nativeEvent: {
-                  dy: this.state.opacity
+        <ScrollView
+          onScroll={
+            Animated.event([{
+              nativeEvent: {
+                contentOffset: {
+                  y: this.state.opacity
                 }
-              }])
-            }
-          />
-        }
+              }
+            }])
+          }
+        >
+          <AlbumInfo />
+          <AlbumList />
+        </ScrollView>
       </View>
     )
   }
 }
 
-const albumInfoHeight = (deviceHeight - 50) * 0.5
-const topGap = 50 + statusBarHeight
+const albumInfoHeight = (height - 50) * 0.5
 
 const styles = StyleSheet.create({
   container: {
@@ -484,10 +282,11 @@ const styles = StyleSheet.create({
     ...centering
   },
   albumInfo: {
-    height: albumInfoHeight + topGap,
+    flex: 1,
+    height: albumInfoHeight + 70,
   },
   albumCtr: {
-    width: deviceWidth,
+    width: width,
     height: albumInfoHeight * 0.2,
     // backgroundColor: 'lightgrey',
     flexDirection: 'row',
@@ -513,37 +312,37 @@ const styles = StyleSheet.create({
   },
   bgCover: {
     position: 'absolute',
-    bottom: 50 - 20,
-    width: deviceWidth,
-    height: deviceWidth
+    bottom: 30,
+    width: width,
+    height: width
   },
 
   infoContent: {
     flex: 1,
-    marginTop: topGap,
-    paddingLeft: deviceWidth * 0.05,
-    paddingRight: deviceWidth * 0.05,
+    marginTop: 70,
+    paddingLeft: width * 0.05,
+    paddingRight: width * 0.05,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
   infoCover: {
-    width: deviceWidth * 0.35,
-    height: deviceWidth * 0.35,
-    marginRight: deviceWidth * 0.04,
+    width: width * 0.35,
+    height: width * 0.35,
+    marginRight: width * 0.04,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
   cover: {
-    width: deviceWidth * 0.35,
-    height: deviceWidth * 0.35,
+    width: width * 0.35,
+    height: width * 0.35,
     borderRadius: 2
   },
   infoText: {
     flex: 1,
-    height: deviceWidth * 0.38,
-    paddingTop: deviceWidth * 0.03,
+    height: width * 0.38,
+    paddingTop: width * 0.03,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
@@ -575,7 +374,6 @@ const styles = StyleSheet.create({
     // marginTop: -20,
     paddingBottom: 50,
     backgroundColor: BACKGROUND_M,
-    overflow: 'hidden'
   },
   listCtr: {
     height: 50,
@@ -643,27 +441,22 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   itemAlbumHeight: {
-    height: 60,
-    paddingLeft: 66
+    height: 60
   },
   itemTrackHeight: {
-    height: 55,
-    paddingLeft: 55,
+    height: 55
   },
   borderLine: {
     borderBottomWidth: PX_1,
     borderBottomColor: 'rgba(0,0,0,0.1)',
   },
   albumIndex: {
-    position: 'absolute',
-    left: 0,
     width: 60,
     height: 60,
     marginLeft: 4,
+    marginRight: 6,
   },
   trackIndex: {
-    position: 'absolute',
-    left: 0,
     width: 55,
     height: 55,
   },
@@ -699,21 +492,4 @@ const styles = StyleSheet.create({
   },
 })
 
-function mapStateToProps(
-  { album: { albumInfo } } : { album: IAlbumState }
-) {
-  return {
-    albumInfo
-  }
-}
-
-function mapDispatchToProps(dispatch: Dispatch<Action>) {
-  return {
-    putAlbumToPlaylistAction: (index: number) => dispatch(putAlbumToPlaylistAction(index))
-  }
-}
-
-export default connect(
-  null,
-  mapDispatchToProps
-)(AlbumPage)
+export default AlbumPage

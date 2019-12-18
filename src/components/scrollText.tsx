@@ -6,8 +6,9 @@ import {
   Animated
 } from 'react-native'
 
-import { deviceWidth } from '../config/styleConfig'
+import { deviceSize } from '../config/styleConfig'
 
+const { width } = deviceSize
 const SCROLL_GAP = 100
 const SPEED = 0.025
 
@@ -30,7 +31,6 @@ class ScrollText extends Component<any, any> {
         toValue: 1,
         delay: 1000,
         duration: this.state.scrollTime,
-        isInteraction: false,
         useNativeDriver: true
       })
     )
@@ -54,7 +54,7 @@ class ScrollText extends Component<any, any> {
           style={props.style}
           onLayout={
             ({ nativeEvent }) => {
-              if(nativeEvent.layout.width > deviceWidth - 112) {
+              if(nativeEvent.layout.width > width - 112) {
                 this.setState({
                   scroll: true,
                   scrollTime: (nativeEvent.layout.width + SCROLL_GAP) / SPEED,

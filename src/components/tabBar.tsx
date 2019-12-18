@@ -11,7 +11,7 @@ import NavigationService from '../common/js/navigationService'
 
 import IconFont from './icon'
 
-import { ICON_SIZE_M, centering, deviceWidth } from '../config/styleConfig'
+import { deviceSize, ICON_SIZE_M, centering } from '../config/styleConfig'
 import { tabIconAnime } from '../config/animeConfig'
 
 const navItems = [{
@@ -131,7 +131,7 @@ class Tab extends Component<ITabProps, any> {
   }
 }
 
-const barWidth = deviceWidth * 0.6
+const barWidth = deviceSize.width * 0.6
 const styles = StyleSheet.create({
   // tabBar
   container: {

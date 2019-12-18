@@ -9,18 +9,16 @@ import {
 import { Dispatch, Action } from 'redux'
 import { connect } from 'react-redux'
 import { changePlayerStatusAction } from '../redux/actions/player.action'
-import { openPlaylistModalAction } from '../redux/actions/playlist.action'
 import PlayerSlider from '../components/playerSlider'
-import refService from '../common/js/refService'
 
 import { bottomBoxAnime } from '../config/animeConfig'
 import { IPlayerState } from '../config/interfaces'
-import { statusBarHeight, deviceHeight, deviceWidth } from '../config/styleConfig'
+import { deviceSize, statusBarHeight } from '../config/styleConfig'
 import { relate_btn_ary, player_btn_ary } from '../config/assetsConfig'
 
 class PlayerController extends Component<IPlayerCtr> {
   render() {
-    console.log('player/playerCtrContainer渲染')
+    console.log('playerContainer渲染')
     return (
       <Animated.View style={[styles.controllerBox, {
         opacity: bottomBoxAnime.interpolate({
@@ -108,8 +106,7 @@ class UserCtr extends Component<any, any> {
 type PlayerStatusType = 'playing' | 'pause'
 interface IPlayerCtr {
   status: PlayerStatusType,
-  changePlayerStatusAction: (status: PlayerStatusType) => Action,
-  openPlaylistModalAction: () => Action
+  changePlayerStatusAction: (status: PlayerStatusType) => Action
 }
 class PlayerCtr extends Component<IPlayerCtr, any> {
   constructor(props: any) {
@@ -135,7 +132,6 @@ class PlayerCtr extends Component<IPlayerCtr, any> {
   }
 
   onPress = (icon: string) => {
-    const swiper = refService.getRef('discSwiper')
     switch(icon) {
       case 'mode':
         // this.setState({ love: 'loved' })
@@ -151,14 +147,11 @@ class PlayerCtr extends Component<IPlayerCtr, any> {
         // this.setState({ comment: 'comments' })
         break
       case 'prev':
-        swiper.jumpPrev()
-        break
+        return null
       case 'next':
-        swiper.jumpNext()
-        break
+        return null
       case 'info':
-        this.props.openPlaylistModalAction()
-        break
+        return null
       default: return null
     }
   }
@@ -270,14 +263,15 @@ class UserBtn extends Component<IPlayerBtn, any> {
     )
   }
 }
-const ctrGroupH = (deviceHeight - 50 - statusBarHeight) * 0.3
-const btn_group_height = (deviceHeight - statusBarHeight - 50) * 0.3
+const { width, height } = deviceSize
+const ctrGroupH = (height - 50 - statusBarHeight) * 0.3
+const btn_group_height = (height - statusBarHeight - 50) * 0.3
 const userBtnBoxH = btn_group_height * 0.35
 const playerBtnBoxH = btn_group_height * 0.45
 const styles = StyleSheet.create({
   // 按钮组、slider
   controllerBox: {
-    width: deviceWidth,
+    width: width,
     height: ctrGroupH,
     // 下方按钮组等空间上移一段位置以便协调disc和控件之间的空隙
     marginTop: -ctrGroupH * 0.35 * 0.2 + 100
@@ -286,7 +280,7 @@ const styles = StyleSheet.create({
 const userBtnStyles = StyleSheet.create({
   // 按钮组-用户相关按钮
   ctr: {
-    width: deviceWidth,
+    width: width,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-start',
@@ -299,7 +293,7 @@ const userBtnStyles = StyleSheet.create({
   },
   btn: {
     position: 'absolute',
-    left: (deviceWidth - 80 - userBtnBoxH * relate_btn_ary.length) / 8,
+    left: (width - 80 - userBtnBoxH * relate_btn_ary.length) / 8,
     width: userBtnBoxH,
     height: userBtnBoxH,
   },
@@ -321,15 +315,15 @@ const playerBtnStyles = StyleSheet.create({
   },
   btn: {
     position: 'absolute',
-    width: deviceWidth / player_btn_ary.length,
-    height: deviceWidth / player_btn_ary.length,
+    width: width / player_btn_ary.length,
+    height: width / player_btn_ary.length,
   },
   btn_play: {
     position: 'absolute',
-    width: deviceWidth / 4.4,
-    height: deviceWidth / 4.4,
-    top: -(deviceWidth / 4.4 - deviceWidth / 5) / 2,
-    left: -(deviceWidth / 4.4 - deviceWidth / 5) / 2
+    width: width / 4.4,
+    height: width / 4.4,
+    top: -(width / 4.4 - width / 5) / 2,
+    left: -(width / 4.4 - width / 5) / 2
   },
   btn_hide: {
     opacity: 0
@@ -350,8 +344,7 @@ function mapStateToProps(
 
 function mapDispatchToProps(dispatch: Dispatch<Action>) {
   return {
-    changePlayerStatusAction: (status: PlayerStatusType) => dispatch(changePlayerStatusAction(status)),
-    openPlaylistModalAction: () => dispatch(openPlaylistModalAction())
+    changePlayerStatusAction: (status: PlayerStatusType) => dispatch(changePlayerStatusAction(status))
   }
 }
 

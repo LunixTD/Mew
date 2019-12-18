@@ -6,20 +6,16 @@ import {
 } from 'react-native'
 
 // 获取设备尺寸
-const deviceSize = Dimensions.get('window')
-export const deviceWidth = deviceSize.width
-export const deviceHeight = deviceSize.height
+export const deviceSize = Dimensions.get('window')
+const w = deviceSize.width
 
-const NUM = deviceWidth / 100
+const NUM = w / 100
 
 // 1px
 export const PX_1 = 1 / deviceSize.scale
 
 // 状态栏高度
 export const statusBarHeight: any = StatusBar.currentHeight
-
-// drawer宽度
-export const drawerW = deviceWidth * 0.85
 
 // flex下居中代码
 export const centering = { justifyContent: 'center', alignItems: 'center' } as FlexStyle
@@ -43,12 +39,8 @@ export const GAP_SIZE_S = 6
 export const GAP_SIZE_1 = NUM * 0.75
 export const GAP_SIZE_2 = NUM * 1.5
 
-// 间隙颜色
-export const GAP_COLOR_M = '#e5e5e5'
-
 // 颜色配置
 export const THEME_COLOR = '#d33a32'
-export const THEME_COLOR_DARK = '#b7302c'
 
 // 背景配色 { M: main, W: worm, G: grey, D: dark, H: header }
 export const BACKGROUND_M = '#fefefe'
@@ -59,7 +51,7 @@ export const BACKGROUND_H_D = '#343642'
 
 // 文字配色 { M: main, S: shallow, W: white, G: grey }
 export const FONT_COLOR_M = '#333'
-export const FONT_COLOR_S = '#4c4c4c'
+export const FONT_COLOR_S = '#363636'
 export const FONT_COLOR_SS = '#7A7A7A'
 export const FONT_COLOR_G = '#737373'
 export const FONT_COLOR_W = '#EFF3F8'
@@ -70,6 +62,3 @@ export const FONT_SIZE_L = 14
 export const FONT_SIZE_EL = 16
 export const FONT_SIZE_ML = 18
 export const FONT_SIZE_TITLE4 = 26
-
-// 边框色
-export const BORDER_COLOR_M = 'rgba(0,0,0,0.05)'

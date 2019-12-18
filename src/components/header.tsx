@@ -5,9 +5,7 @@ import {
   Text,
   Animated,
   TouchableNativeFeedback,
-  ImageRequireSource,
-  RegisteredStyle,
-  ViewStyle
+  ImageRequireSource
 } from 'react-native'
 import { Dispatch, Action } from 'redux'
 import { connect } from 'react-redux'
@@ -15,15 +13,12 @@ import { closePlayerBoxAction } from '../redux/actions/player.action'
 import navigationService from '../common/js/navigationService'
 import LinearGradient from 'react-native-linear-gradient'
 import ScrollText from '../components/scrollText'
-import { get, forEach } from 'lodash'
 
 import IconFont from '../components/icon'
-import { statusBarHeight, centering, ICON_SIZE_M, deviceWidth, THEME_COLOR } from '../config/styleConfig'
-import { ITrack, IArtist } from '../config/interfaces'
+import { deviceSize, statusBarHeight, centering, ICON_SIZE_M } from '../config/styleConfig'
 
+const { width } = deviceSize
 interface IPlayerHeaderProps {
-  playlist: ITrack[],
-  playingIndex: number,
   closePlayerBoxAction: () => Action
 }
 export const PlayerHeader = connect(
@@ -31,20 +26,11 @@ export const PlayerHeader = connect(
   mapDispatchToProps
 )(
   class PlayerHeader extends Component<IPlayerHeaderProps, any> {
-
     handleBack = () => {
       this.props.closePlayerBoxAction()
     }
   
     render() {
-      const track = this.props.playlist[this.props.playingIndex]
-      const title = get(track, 'name', '')
-      const artist = get(track, 'ar', [])
-      let author = ''
-      forEach(artist, (item: IArtist, index: number) => {
-        if (index > 0) author += ('/' + item.name)
-        author += item.name
-      })
       console.log('player/header渲染')
       return (
         <View style={styles.playerHeader}>
@@ -61,13 +47,9 @@ export const PlayerHeader = connect(
             <View style={styles.infoContainer}>
               <ScrollText
                 style={styles.infoTitle}
-                text={title}
+                text={'测试的音乐标题标题标题标题标题标题'}
               />
-              <Text
-                style={styles.infoAuthor}
-                numberOfLines={1}
-                ellipsizeMode='tail'
-              >{`${author}`}</Text>
+              <Text style={styles.infoAuthor}>{'测试的音乐标题标题标题标题标题标题'}</Text>
             </View>
           </View>
           <TouchableNativeFeedback
@@ -91,7 +73,7 @@ export const PlayerHeader = connect(
   }
 )
 interface IAlbumHeaderProps {
-  source: string,
+  source: ImageRequireSource,
   opacity: any
   interactHeight: number
 }
@@ -99,14 +81,6 @@ export const AlbumHeader = connect(
   null, null
 )(
   class AlbumHeader extends Component<IAlbumHeaderProps> {
-    shouldComponentUpdate(nextProps: any) {
-      if (this.props.source !== nextProps.source) {
-        return true
-      } else {
-        return false
-      }
-    }
-
     handleBack = () => {
       navigationService.stackNavigate('back')
     }
@@ -120,11 +94,11 @@ export const AlbumHeader = connect(
       return (
         <View style={styles.albumHeader}>
           <Animated.Image
-            source={{uri: this.props.source + '?param=50y50'}}
+            source={this.props.source}
             style={[styles.albumFillSize, {
               opacity: this.props.opacity
             }]}
-            blurRadius={4}
+            blurRadius={100}
           />
           <TouchableNativeFeedback
             onPress={this.handleBack}
@@ -154,43 +128,10 @@ export const AlbumHeader = connect(
   }
 )
 
-interface INormalHeader {
-  style?: RegisteredStyle<ViewStyle>,
-  containStatusBar: boolean,
-  title: string,
-  leftIcon?: string,
-  onLeftIconPress?: () => void,
-}
-
-export const NormalHeader = class NormalHeader extends Component<INormalHeader> {
-  render() {
-    const props = this.props
-    const statusBar = props.containStatusBar ? styles.hasStatusBar : null
-    const headerStyle = get(props, 'style', null) ? props.style : null
-    const leftPart = get(props, 'leftIcon', null) ? props.leftIcon : null
-    return (
-      <View style={[styles.normalHeader, statusBar, headerStyle]}>
-        {
-          !leftPart ? null : 
-          <TouchableNativeFeedback
-            background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
-            onPress={props.onLeftIconPress}
-          >
-            <View style={styles.icon}>
-              <IconFont name={props.leftIcon} size={26} color="#fff" />
-            </View>
-          </TouchableNativeFeedback>
-        }
-        <Text style={styles.normalTitle}>{props.title}</Text>
-      </View>
-    )
-  }
-}
-
 const styles = StyleSheet.create({
   playerHeader: {
     height: 50,
-    width: deviceWidth,
+    width: width,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -204,7 +145,7 @@ const styles = StyleSheet.create({
   },
   // 滚屏标题
   info: {
-    width: deviceWidth - 112,
+    width: width - 112,
     height: 50,
     flexDirection: 'column',
     justifyContent: 'center',
@@ -222,15 +163,15 @@ const styles = StyleSheet.create({
   },
   infoTitle: {
     position: 'absolute',
-    top: 1,
+    top: 0,
     color: 'rgba(255,255,255,0.9)',
-    fontSize: 17,
+    fontSize: 18
   },
   infoAuthor: {
     position: 'absolute',
-    bottom: 1,
+    bottom: 0,
     color: 'rgba(255,255,255,0.4)',
-    fontSize: 13,
+    fontSize: 12
   },
   line: {
     position: 'absolute',
@@ -251,7 +192,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     height: statusBarHeight + 50,
-    width: deviceWidth,
+    width: width,
     paddingTop: statusBarHeight,
     paddingBottom: 5,
     flexDirection: 'row',
@@ -264,34 +205,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   albumTitle: {
-    color: '#fff',
+    color: 'rgba(255,255,255,0.9)',
     fontSize: 20
   },
   albumFillSize: {
     position: 'absolute',
     bottom: -20,
     left: 0,
-    width: deviceWidth,
-    height: deviceWidth,
+    width: width,
+    height: width,
     zIndex: -99
   },
-  // normal
-  normalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    width: deviceWidth,
-    height: 50,
-    backgroundColor: THEME_COLOR,
-  },
-  hasStatusBar: {
-    height: statusBarHeight + 50,
-    paddingTop: statusBarHeight
-  },
-  normalTitle: {
-    fontSize: 18,
-    color: '#fff'
-  }
 })
 
 function mapDispatchToProps(dispatch: Dispatch<Action>) {

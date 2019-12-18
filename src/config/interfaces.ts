@@ -1,107 +1,48 @@
-import { ImageURISource } from "react-native"
-
-// 播放器State
+// 播放器State接口
 export interface IPlayerState {
   playerBoxStatus: boolean,
   status: 'pause' | 'playing',
   currentTime: number,
   duration: number,
   sliderValue: number,
-  isSliding: boolean,
+  isSliding: boolean
 }
 
-// 播放列表
-export type PlaylistModalStatus = 'close' | 'open'
-export interface IPlaylistState {
-  playingIndex: number | null,
-  playlist: ITrack[],
-  modalPlaylist: ITrack[],
-  playlistModalStatus: PlaylistModalStatus
-}
-
-// 通用状态
-export type LockMode = 'unlocked' | 'locked-open' | 'locked-closed'
-export type AuthStatus = 'pass' | 'notPass' | 'notAuth'
-export type MainViewStatus = 'mount' | 'unMount' | 'notAuth'
+// 通用状态接口
+type LockMode = 'unlocked' | 'locked-open' | 'locked-closed'
 export interface ICommonState {
-  drawerLockMode: LockMode,
-  mainViewStatus: AuthStatus,
-  authStatus: AuthStatus,
-  reloadMainView: boolean
+  drawerLockMode: LockMode
 }
 
-// 歌单State
+// 歌单State接口
 export interface IAlbumState {
-  userAlbum: IAlbum[],
-  albumInfo: IAlbumInfo | {}
+  userAlbum: IAlbum[]
 }
 
-// 创建人对象
+// 创建人对象接口
 export interface ICreator {
   userId: number,
   defaltAvatar: boolean,
-  avatarUrl: string,
-  backgroundUrl: string,
+  avatarUrl: URL,
+  backgroundUrl: URL,
   birthday: number,
   province: number,
   city: number,
-  nickname: string,
-  gender: number
+  nickName: string,
+  gender: number,
 }
 
-// 每日推荐歌单对象
-export interface IRecommendAlbum {
-  id: number,
-  picUrl: string,
-  name: string,
-  creator: ICreator,
-  copywriter: string,
-  trackCount: number
-}
-
-//歌单对象
+//歌单对象接口
 export interface IAlbum {
   id: number,
-  coverImgUrl: string,
+  coverImgUrl: URL,
   name: string,
   creator: ICreator,
-  trackCount: number
-}
-
-//歌单详情对象
-export interface IAlbumInfo {
-  coverImgUrl: string,
-  name: string,
-  creator: ICreator | {},
   trackCount: number,
-  tracks: ITrack[],
-  commentCount: number,
-  shareCount: number,
-  cloudTrackCount: number
 }
 
-// 歌曲对象
+// 歌曲对象接口
 export interface ITrack {
-  id?: number,
-  ar?: IArtist[],
   name: string,
-  al: {
-    name: string,
-    picUrl: string
-  },
-  playCount?: number
-}
-
-// 歌手对象
-export interface IArtist {
-  id: number,
-  name: string
-}
-
-// 用户简介
-export interface IProfile {
-  userId: number,
-  nickName: string,
-  avatarUrl: string,
-  birthday?: string,
+  author: string
 }

@@ -1,14 +1,12 @@
 import React, { Component } from 'react'
 import { Dispatch, Action } from 'redux'
 import { connect } from 'react-redux'
-import { IPlayerState, IPlaylistState } from '../config/interfaces'
+import { IPlayerState } from '../config/interfaces'
 import { audioWatcherAction, setDurationAction, setCurrentTimeAction } from '../redux/actions/player.action'
 import Video from 'react-native-video'
 import refService from '../common/js/refService'
-import { getMusicLink } from '../services/api'
-import { store } from '../App'
 
-interface IAudio extends IPlaylistState {
+interface IAudio {
   status: 'pause' | 'playing'
   audioWatcherAction: () => Action,
   setDurationAction: (duration: number) => any,
@@ -18,16 +16,9 @@ interface IAudio extends IPlaylistState {
 class Audio extends Component<IAudio> {
   private _audio: any
   private count: number = 0
-  private playingIndex: number = 0
-  private sourceUrl: string | undefined = undefined
   componentDidMount() {
+    refService.setRefBox('audio', this._audio)
     this.props.audioWatcherAction()
-  }
-
-  componentWillUpdate(nextProps: any) {
-    // console.log(nextProps)
-    const musicId = nextProps.playlist[nextProps.playingIndex].id
-    this.sourceUrl = getMusicLink(musicId)
   }
 
   onLoad = (data: any) => {
@@ -35,51 +26,28 @@ class Audio extends Component<IAudio> {
   }
 
   onProgress = (data: any) => {
-    const { isSliding } = store.getState().player
     this.count++
     if (this.count === 4) {
-      if (!isSliding) this.props.setCurrentTimeAction(data.currentTime)
+      this.props.setCurrentTimeAction(data.currentTime)
       this.count = 0
     }
   }
 
-  onEnd = () => {
-    setTimeout(() => {
-      const swiper = refService.getRef('discSwiper')
-      swiper.jumpNext()
-    }, 200)
-  }
-
-  onlayout = () => {
-    refService.setRefBox('audio', this._audio)
-  }
-
   render() {
-    // let sourceUrl: string | undefined
-    // try {
-    //   const props = this.props
-    //   console.log(props.playlist[props.playingIndex])
-    //   sourceUrl = props.playlist[props.playingIndex].sourceUrl
-    // } catch (error) {
-    //   sourceUrl = undefined
-    // }
-    
     return (
-      this.sourceUrl === undefined ? null : 
       <Video
-        source={{uri: this.sourceUrl}}
+        source={require('../../assets/music/Locked-Away.mp3')}
         ref={(ref) => this._audio = ref}
         rate={1.0}
         volume={1.0}
-        muted={false}
+        resizeMode="cover"
         repeat={false}
         paused={this.props.status === 'pause' ? true : false}
         playInBackground={true}
         playWhenInactive={true}
         onLoad={this.onLoad}
         onProgress={this.onProgress}
-        onEnd={this.onEnd}
-        onLayout={this.onlayout}
+        // onEnd={this.onEnd}
       />
     )
   }
