@@ -1,45 +1,27 @@
 import React, {Component} from 'react'
 import {
-  StyleSheet,
-  Text, 
-  View,
-  ImageComponent
+  StatusBar
 } from 'react-native'
-import { Provider, connect } from 'react-redux'
+import { Provider } from 'react-redux'
 import configureStore from './redux/store/store'
-import NavigationService from './common/js/navigationService'
-import { DrawerNavigator } from './navigator/navigator'
-
-import { ICommonState } from './config/interfaces'
+import Index from './contianer/index'
 
 export const store = configureStore()
-
 
 export default class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <DrawerView />
+        <StatusBar
+          barStyle='light-content'
+          translucent={true}
+          backgroundColor='rgba(0,0,0,0)'
+        />
+        <Index />
       </Provider>
     )
   }
 }
-
-const DrawerView =  connect(
-  ({ common: { drawerLockMode } }: { common: ICommonState }) => ({ drawerLockMode }),
-  null
-)(class DrawerView extends Component<any> {
-  render() {
-    return (
-      <DrawerNavigator 
-        ref={(navigatorRef: any) => {
-          NavigationService.setTopLevelNavigator(navigatorRef, 'drawer')
-        }}
-        screenProps={{ drawerLockMode: this.props.drawerLockMode }}
-      />
-    )
-  }
-})
 
 
 

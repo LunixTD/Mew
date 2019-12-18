@@ -7,19 +7,22 @@ import {
   TouchableOpacity,
   TouchableNativeFeedback,
   TouchableWithoutFeedback,
+  InteractionManager,
   Animated,
-  ScrollView
+  ScrollView,
+  NativeModules
 } from 'react-native'
 import { Dispatch, Action } from 'redux'
 import { connect } from 'react-redux'
 import navigationService from '../common/js/navigationService'
-import { getUserAlbumAction } from '../redux/actions/album.action'
+import { getUserAlbumAction, getAlbumInfoAction } from '../redux/actions/album.action'
+import { stackNavigateTo } from '../redux/actions/common.action'
 
 import { ListItem } from './albumPage'
 import IconFont from '../components/icon'
 
-import * as styleConfig from '../config/styleConfig'
 import { IAlbumState, IAlbum } from '../config/interfaces'
+import { PX_1, THEME_COLOR, deviceWidth, BACKGROUND_G, centering, FONT_SIZE_TITLE4, FONT_COLOR_W, FONT_SIZE_L, FONT_COLOR_SS, BACKGROUND_M, FONT_COLOR_S, FONT_SIZE_M, musicBoxH, GAP_COLOR_M } from '../config/styleConfig';
 
 const listItems = [
   {
@@ -87,11 +90,11 @@ class UserPage extends Component<IUserPageProps, any> {
   }
 
   handleConfiPress = () => {
-    // alert('配置歌单')
-    navigationService.stackNavigate('AlbumPage')
+    alert('配置歌单')
   }
 
   render() {
+    console.log('userPage渲染')
     return (
       <ScrollView style={styles.container}>
         <View style={styles.userInfoBox}>
@@ -122,14 +125,14 @@ class UserPage extends Component<IUserPageProps, any> {
                 marginBottom: v.isGap ? 10 : 0
               }]}>
                 <View style={[styles.itemCon, {
-                  borderColor: '#e5e5e5',
-                  borderBottomWidth: i === listItems.length - 1 || v.isGap ? 0 : styleConfig.PX_1,
+                  borderColor: GAP_COLOR_M,
+                  borderBottomWidth: i === listItems.length - 1 || v.isGap ? 0 : PX_1,
                 }]}>
                   <View style={styles.iconBox}>
                     <IconFont
                       name={v.itemIcon}
                       size={24}
-                      color={styleConfig.THEME_COLOR}
+                      color={THEME_COLOR}
                     />
                     <Text style={styles.itemName}>{v.itemName}</Text>
                   </View>
@@ -186,26 +189,35 @@ class UserPage extends Component<IUserPageProps, any> {
 
 const AlbumList = connect(
   ({ album: { userAlbum } }: { album: IAlbumState }) => ({ userAlbum }),
-  null
+  (dispatch) => {
+    return {
+      getAlbumInfoAction: (album: IAlbum) => dispatch(getAlbumInfoAction(album)),
+      // stackNavigateTo: (screen: String, params: any) => dispatch(stackNavigateTo(screen, params))
+    }
+  }
 )(
   class AlbumList extends Component<any> {
+    onItemPress = (album: IAlbum) => {
+      this.props.getAlbumInfoAction(album)
+      // this.props.stackNavigateTo('AlbumPage', album)
+      // navigationService.stackNavigate('AlbumPage', { album })
+    }
 
     render() {
       const props = this.props
-      const AlbumListLength = props.userAlbum.length
+      const albumListLength = props.userAlbum.length
       return (
         <View style={styles.albumContainer}>
           {
-            AlbumListLength <= 0 ? null : 
+            albumListLength <= 0 ? null : 
             props.userAlbum.map((item: IAlbum, index: number) => (
               <ListItem
                 key={index}
                 type='album'
                 index={index}
-                length={AlbumListLength}
-                name={item.name}
-                trackCount={item.trackCount}
-                coverImgUrl={require('../../assets/cover/lwa2.jpg')}
+                length={albumListLength}
+                onItemPress={() => this.onItemPress(item)}
+                {...item}
               />
             ))
           }
@@ -215,22 +227,21 @@ const AlbumList = connect(
   }
 )
 
-const { width, height } = styleConfig.deviceSize
-const avatarW = width * 0.3
+const avatarW = deviceWidth * 0.3
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: styleConfig.BACKGROUND_G
+    backgroundColor: BACKGROUND_G
   },
   // 用户信息
   userInfoBox: {
     flexDirection: 'column',
-    ...styleConfig.centering
+    ...centering
   },
   infoTop: {
-    width: width,
+    width: deviceWidth,
     height: avatarW * 0.5 + 20,
-    backgroundColor: styleConfig.THEME_COLOR,
+    backgroundColor: THEME_COLOR,
     paddingLeft: avatarW + 40,
     paddingBottom: 6,
     flexDirection: 'row',
@@ -238,19 +249,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   nikeName: {
-    fontSize: styleConfig.FONT_SIZE_TITLE4,
+    fontSize: FONT_SIZE_TITLE4,
     fontWeight: 'bold',
-    color: styleConfig.FONT_COLOR_W,
+    color: FONT_COLOR_W,
     textShadowOffset: { width: 2, height: 2 },
     textShadowColor: 'rgba(0,0,0,0.35)',
     textShadowRadius: 10
   },
   place: {
-    fontSize: styleConfig.FONT_SIZE_L,
-    color: styleConfig.FONT_COLOR_SS,
+    fontSize: FONT_SIZE_L,
+    color: FONT_COLOR_SS,
   },
   infoBottom: {
-    width: width,
+    width: deviceWidth,
     height: avatarW * 0.5 - 20,
     paddingLeft: avatarW + 40,
     paddingTop: 3,
@@ -262,9 +273,9 @@ const styles = StyleSheet.create({
     width: avatarW,
     height: avatarW,
     borderRadius: avatarW / 2,
-    backgroundColor: styleConfig.BACKGROUND_G,
+    backgroundColor: BACKGROUND_G,
     flexDirection: 'row',
-    ...styleConfig.centering
+    ...centering
   },
   avatar: {
     width: avatarW - 6,
@@ -278,7 +289,7 @@ const styles = StyleSheet.create({
   },
   item: {
     paddingLeft: 15,
-    backgroundColor: styleConfig.BACKGROUND_M
+    backgroundColor: BACKGROUND_M
   },
   itemCon: {
     flexDirection: 'row',
@@ -289,11 +300,11 @@ const styles = StyleSheet.create({
   },
   iconBox: {
     flexDirection: 'row',
-    ...styleConfig.centering
+    ...centering
   },
   itemName: {
-    color: styleConfig.FONT_COLOR_S,
-    fontSize: styleConfig.FONT_SIZE_L,
+    color: FONT_COLOR_S,
+    fontSize: FONT_SIZE_L,
     marginLeft: 15,
     marginRight: 15,
   },
@@ -302,8 +313,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   switch: {
-    width: width,
-    backgroundColor: styleConfig.THEME_COLOR,
+    width: deviceWidth,
+    backgroundColor: THEME_COLOR,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -324,13 +335,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   albumText: {
-    fontSize: styleConfig.FONT_SIZE_M,
+    fontSize: FONT_SIZE_M,
     color: 'white'
   },
   albumContainer: {
     flex: 1,
-    paddingBottom: styleConfig.musicBoxH + styleConfig.PX_1,
-    backgroundColor: styleConfig.BACKGROUND_M
+    marginBottom: musicBoxH + PX_1,
+    backgroundColor: BACKGROUND_M
   },
 })
 

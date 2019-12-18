@@ -3,7 +3,6 @@ import { all, takeEvery, take, put, call, select } from 'redux-saga/effects'
 import * as types from '../actions/actionTypes'
 import { musicPlayerCtr, bottomBoxCtr } from '../../config/animeConfig'
 import refService from '../../common/js/refService'
-import axios from 'axios'
 import * as api from '../../services/api'
 
 const playerSelector = (state: any) => state.player
@@ -14,19 +13,15 @@ function* playerOpenAndClose() {
     yield take(types.PLAYER_BOX_OPEN)
     yield put({ type: types.DRAWER_LOCK_MODE, payload: { mode: 'locked-closed' } })
     yield put({ type: types.PLAYER_BOX_STATUS, payload: { status: true } })
-    // let anime = yield call(InteractionManager.createInteractionHandle)
     yield call(musicPlayerCtr.open.start)
     yield call(bottomBoxCtr.open.start)
-    // yield call(InteractionManager.clearInteractionHandle, anime)
 
     // 播放界面关闭
     yield take(types.PLAYER_BOX_CLOSE)
     yield put({ type: types.PLAYER_BOX_STATUS, payload: { status: false } })
-    // anime = yield call(InteractionManager.createInteractionHandle)
     yield call(musicPlayerCtr.close.start)
     yield call(bottomBoxCtr.close.start)
     yield put({ type: types.DRAWER_LOCK_MODE, payload: { mode: 'unlocked' } })
-    // yield call(InteractionManager.clearInteractionHandle, anime)
   }
 }
 
@@ -34,10 +29,8 @@ function* audioWatcher() {
   while(true) {
     // 设置各控件的歌曲当前时间以及进度
     yield take(types.SET_CURRENTTIME)
-    const { currentTime, duration, isSliding } = yield select(playerSelector)
-    if (!isSliding) {
-      setPropsRelatePlayer(currentTime, duration)
-    }
+    const { currentTime, duration } = yield select(playerSelector)
+    setPropsRelatePlayer(currentTime, duration)
   }
 }
 
@@ -72,7 +65,10 @@ function setPropsRelatePlayer(currentTime: number, duration: number) {
   _time.setNativeProps({
     text: formatTime(currentTime)
   })
-  _slider._setCurrentValue(percentage)
+  // _slider._setCurrentValue(percentage)
+  _slider.setNativeProps({
+    value: percentage
+  })
   _circle.setNativeProps({
     strokeDasharray: ary
   })

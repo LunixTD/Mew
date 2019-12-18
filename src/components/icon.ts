@@ -9,7 +9,7 @@ const glyphMap = {
   'tab-user': '\ue615',
   // homePage
   'recommend': '\ue60e',
-  'favor': '\ue60d',
+  'favor': '\ue638',
   'perfect': '\ue60b',
   'title-more': '\ue662',
   // bottomBox
@@ -32,6 +32,17 @@ const glyphMap = {
   'album-dld': '\ue601',
   'album-multi': '\ue602',
   'album-more': '\ue604',
+  // index
+  'mobile': '\ue628',
+  'pwd': '\ue62a',
+  'userName': '\ue62c',
+  'verification': '\ue629',
+  'delete': '\ue62d',
+  // drawer
+  'logout': '\ue846',
+  // playlistModal
+  'shuffle': '\ue64b',
+  'removeAll': '\ue792',
 }
 
  export default createIconSet(glyphMap, 'iconfont')

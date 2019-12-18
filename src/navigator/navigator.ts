@@ -1,7 +1,3 @@
-import React, { Component } from 'react'
-import {
-  View,
-} from 'react-native'
 import { 
   createDrawerNavigator,
   createStackNavigator,
@@ -11,10 +7,12 @@ import ScrollPage from '../contianer/scrollPage'
 import Window from '../contianer/window'
 import SearchPage from '../contianer/searchPage'
 import AlbumPage from '../contianer/albumPage'
+import Index from '../contianer/authPage'
 
 import CustomDrawerContentComponent from './customDrawerContentComponent'
 
-import { deviceSize } from '../config/styleConfig'
+import { modalAnime } from './navigatorAnime'
+import { deviceWidth, deviceHeight, drawerW } from '../config/styleConfig'
 
 // stackView
 const StackNavigator = createStackNavigator({
@@ -42,7 +40,6 @@ const StackNavigator = createStackNavigator({
 })
 
 // drawerView
-const drawerW = deviceSize.width * 0.85
 const DrawerNavigator = createDrawerNavigator({
   Home: {
     screen: Window,
@@ -53,9 +50,24 @@ const DrawerNavigator = createDrawerNavigator({
 }, {
   initialRouteName: 'Home',
   drawerWidth: drawerW,
-  contentComponent: CustomDrawerContentComponent
+  contentComponent: (props: any) => CustomDrawerContentComponent(props)
+})
+
+// modal
+const ModalNavigator = createStackNavigator({
+  Home: {
+    screen: DrawerNavigator,
+  },
+  Index: {
+    screen: Index,
+  }
+}, {
+  initialRouteName: 'Home',
+  mode: 'modal',
+  headerMode: 'none',
+  transitionConfig: modalAnime
 })
 
 
 
-export { DrawerNavigator, StackNavigator }
+export { DrawerNavigator, StackNavigator, ModalNavigator }

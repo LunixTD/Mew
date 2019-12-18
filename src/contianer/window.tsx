@@ -6,7 +6,8 @@ import {
 import { StackNavigator } from '../navigator/navigator'
 import NavigationService from '../common/js/navigationService'
 
-import BottomLinshi from './musicPlayer'
+import MusicPlayer from './musicPlayer'
+import PlayListModal from '../components/playlistModal'
 
 class Window extends Component {
   shouldComponentUpdate() {
@@ -22,7 +23,8 @@ class Window extends Component {
             NavigationService.setTopLevelNavigator(navigatorRef, 'stack')
           }}
         />
-        <BottomLinshi />
+        <MusicPlayer />
+        <PlayListModal />
       </View>
     )
   }

@@ -12,37 +12,42 @@ import {
 import { Action, Dispatch } from 'redux'
 import { connect } from 'react-redux'
 import { openPlayerBoxAction, closePlayerBoxAction, watchPlayerBoxAction, changePlayerStatusAction } from '../redux/actions/player.action'
+import { openPlaylistModalAction } from '../redux/actions/playlist.action'
+import { setPlayingIndexAction } from '../redux/actions/playlist.action'
 import { store } from '../App'
 import Svg, { Circle } from 'react-native-svg'
 import IconFont from '../components/icon'
+import { get, forEach } from 'lodash'
 
 import Audio from '../components/player'
 import { PlayerHeader } from '../components/header'
 import FadeBg from '../components/fadeBg'
 import Banner from '../components/banner'
+import Swiper from '../components/swiper'
 import PlayerController from './playerController'
 
-import { PX_1, deviceSize, THEME_COLOR, centering, filling, statusBarHeight } from '../config/styleConfig'
+import { PX_1, THEME_COLOR, centering, filling, statusBarHeight, deviceWidth, deviceHeight } from '../config/styleConfig'
 import { musicPlayerAnime, bottomBoxAnime } from '../config/animeConfig'
-import { IPlayerState } from '../config/interfaces'
-import refService from '../common/js/refService';
+import { IPlaylistState, IPlayerState, ITrack, IArtist } from '../config/interfaces'
+import refService from '../common/js/refService'
 
 interface IProps {
-  // playerStatus: boolean,
-  duration: number,
+  playlist: ITrack[],
+  playingIndex: number,
   openPlayerBoxAction: () => Action,
   // closePlayerBoxAction: () => Action,
   watchPlayerBoxAction: () => Action,
+  setPlayingIndexAction: (index: number) => Action,
+  openPlaylistModalAction: () => Action
 }
-const { width, height } = deviceSize
-const discWidth = width * 0.85
-const discContainerH = (height - 50 - statusBarHeight) * 0.7
-const ctrGroupH = (height - 50 - statusBarHeight) * 0.3
-const discTop = (discContainerH - width) * 0.5
-const discDeltaX = (width - discWidth) * 0.5
+const discWidth = deviceWidth * 0.85
+const discContainerH = (deviceHeight - 50 - statusBarHeight) * 0.7
+const ctrGroupH = (deviceHeight - 50 - statusBarHeight) * 0.3
+const discTop = (discContainerH - deviceWidth) * 0.5
+const discDeltaX = (deviceWidth - discWidth) * 0.5
 const discDeltaY = (discContainerH - discWidth) * 0.5
-const discBoxX = width * 0.5 - 26
-const discBoxY = width * 0.5 + discTop + statusBarHeight +25
+const discBoxX = deviceWidth * 0.5 - 26
+const discBoxY = deviceWidth * 0.5 + discTop + statusBarHeight +25
 
 const banner_list = [
   require('../../assets/cover/lwa1.jpg'),
@@ -51,23 +56,14 @@ const banner_list = [
   require('../../assets/cover/lwa4.jpg')
 ]
 
-const banner_config = {
-  loop: true,
-  autoplay: false,
-  horizontal: true,
-  style: {
-    width: width,
-    height: width
-  }
-}
-
-class BottomLinshi extends Component<IProps, any> {
+class MusicPlayer extends Component<IProps, any> {
   constructor(props: IProps) {
     super(props)
   }
 
   shouldComponentUpdate() {
-    return false
+    // console.log(1)
+    return true
   }
 
   componentDidMount() {
@@ -85,35 +81,98 @@ class BottomLinshi extends Component<IProps, any> {
     this.props.openPlayerBoxAction()
   }
 
-  renderBanner = () => {
-    return (
-      <Banner config={banner_config}>
-      {
-        banner_list.map((item, index) => (
-          <View key={index} style={styles.swiperItem}>
-            <Image style={styles.swiperImg} source={item} resizeMode='cover'/>
-          </View>
-        ))
+  onListBtnPress = () => {
+    this.props.openPlaylistModalAction()
+  }
+
+  // renderBanner = () => {
+  //   const banner_config = {
+  //     refName: 'discSwiper',
+  //     loop: true,
+  //     autoplay: false,
+  //     horizontal: true,
+  //     style: {
+  //       width: deviceWidth,
+  //       height: deviceWidth
+  //     },
+  //     onIndexChanged: (index: number) => {
+  //       this.props.setPlayingIndexAction(index)
+  //     }
+  //   }
+  //   return (
+  //     this.props.playlist.length === 0 ? null :
+  //     <Banner config={banner_config}>
+  //     {
+  //       this.props.playlist.map((item, index) => (
+  //         <View key={index} style={styles.swiperItem}>
+  //           <Image style={styles.swiperImg} source={{uri: item.al.picUrl}} resizeMode='cover'/>
+  //         </View>
+  //       ))
+  //     }
+  //     </Banner>
+  //   )
+  // }
+
+  renderDisc = () => {
+    const banner_config = {
+      refName: 'discSwiper',
+      loop: true,
+      autoplay: false,
+      horizontal: true,
+      style: {
+        width: deviceWidth,
+        height: deviceWidth
+      },
+      onIndexChanged: (index: number) => {
+        this.props.setPlayingIndexAction(index)
       }
-      </Banner>
+    }
+    return (
+      <Swiper
+        ref={(ref: any) => refService.setRefBox('discSwiper', ref)}
+        style={banner_config.style}
+        initialPage={this.props.playingIndex}
+        data={this.props.playlist}
+        renderItem={this.renderSwiperItem}
+        onIndexChanged={banner_config.onIndexChanged}
+      />
+    )
+  }
+
+  renderSwiperItem = (item: any, index: number) => {
+    return (
+      <View key={index} style={styles.swiperItem}>
+        <Image style={styles.swiperImg} source={{uri: item.al.picUrl}} resizeMode='cover'/>
+      </View>
     )
   }
 
   render() {
     console.log('player页面渲染')
+    const props = this.props
+    const initStatus = props.playlist.length > 0 && props.playingIndex !== null
+    const track = this.props.playlist[this.props.playingIndex]
+    const title = get(track, 'name', '')
+    const artist = get(track, 'ar', [])
+    let author = ''
+    forEach(artist, (item: IArtist, index: number) => {
+      if (index > 0) author += ('/' + item.name)
+      author += item.name
+    })
     return (
+      this.props.playlist.length <= 0 ? null : 
       <Animated.View
         style={[styles.container, {
           transform: [{
             translateY: musicPlayerAnime.interpolate({
               inputRange: [0, 1],
-              outputRange: [0, -height + 50]
+              outputRange: [0, -deviceHeight + 50]
             })
           }]
         }]}
       >
         {/* 播放器 */}
-        <Audio />
+        { initStatus ? <Audio {...this.props} /> : null }
         {/* 背景渐变图片 */}
         <Animated.View style={[filling, {
           opacity: bottomBoxAnime.interpolate({
@@ -121,7 +180,7 @@ class BottomLinshi extends Component<IProps, any> {
             outputRange: [0, 0.5, 1]
           }),
         }]}>
-          <FadeBg />
+          { initStatus ? <FadeBg {...this.props} /> : null }
         </Animated.View>
         {/* header */}
         <Animated.View style={[styles.absolutePosition, {
@@ -132,11 +191,11 @@ class BottomLinshi extends Component<IProps, any> {
           transform: [{
             translateX: bottomBoxAnime.interpolate({
               inputRange: [0, 1],
-              outputRange: [0, width]
+              outputRange: [0, discWidth]
             })
           }]
         }]}>
-          <PlayerHeader />
+          <PlayerHeader {...this.props} />
         </Animated.View>
         
         {/* bottomBox */}
@@ -151,21 +210,22 @@ class BottomLinshi extends Component<IProps, any> {
             transform: [{
               translateX: bottomBoxAnime.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, width]
+                outputRange: [0, discWidth]
               })
             }]
           }]}>
             <View style={styles.boxLeft}>
               <View style={styles.coverBox}></View>
               <View style={styles.boxInfo}>
-                <Text style={styles.title}>啦啦啦啦啦啦啦</Text>
-                <Text style={styles.author}>土豆</Text>
+                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.title}>{title}</Text>
+                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.author}>{author}</Text>
               </View>
             </View>
 
             <View style={styles.boxRight}>
               <PlayCtrBtn />
               <TouchableNativeFeedback
+                onPress={this.onListBtnPress}
                 background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
               >
                 <View style={[styles.iconConSize, styles.boxControl]}>
@@ -197,7 +257,7 @@ class BottomLinshi extends Component<IProps, any> {
               }]
             }]}
           >
-            {this.renderBanner()}
+            { initStatus ? this.renderDisc() : null}
           </Animated.View>
         </View>
         {/* 用户相关操作控件 */}
@@ -260,14 +320,14 @@ const PlayCtrBtn = connect(
 )
 
 
-const discContainerHStatus = discContainerH >= width
+const discContainerHStatus = discContainerH >= discWidth
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     left: 0,
-    top: height - 50,
-    width: width,
-    height: height,
+    top: deviceHeight - 50,
+    width: deviceWidth,
+    height: deviceHeight,
     paddingTop: statusBarHeight + 50,
     backgroundColor: 'transparent',
     flexDirection: 'column',
@@ -276,9 +336,9 @@ const styles = StyleSheet.create({
   },
   absolutePosition: {
     position: 'absolute',
-    width: width,
+    width: deviceWidth,
     top: statusBarHeight,
-    left: -width,
+    left: -discWidth,
     height: 50,
     flexDirection: 'row',
     ...centering,
@@ -288,7 +348,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     top: 0,
-    width: width,
+    width: deviceWidth,
     height: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -312,19 +372,22 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     top: discContainerHStatus ? discTop : 0,
-    width: width,
-    height: width,
+    width: deviceWidth,
+    height: deviceWidth,
     overflow: 'hidden'
   },
   boxInfo: {
+    width: deviceWidth - 40 - 6 * 2 - 100,
     justifyContent: 'space-around'
   },
   title: {
-    color: '#444444'
+    color: '#444444',
+    marginBottom: -1
   },
   author: {
     color: '#888888',
-    fontSize: 12
+    fontSize: 12,
+    marginTop: -1
   },
   // box右边区域
   boxRight: {
@@ -355,14 +418,14 @@ const styles = StyleSheet.create({
   // Disc
   discContainer: {
     position: 'relative',
-    width: width,
-    height: discContainerHStatus ? discContainerH : width,
+    width: deviceWidth,
+    height: discContainerHStatus ? discContainerH : deviceWidth,
     // backgroundColor: 'blue',
     zIndex: 88
   },
   swiperItem: {
-    width: width,
-    height: width,
+    width: deviceWidth,
+    height: deviceWidth,
     flexDirection: 'row',
     ...centering
   },
@@ -375,24 +438,28 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(
   {
-    player: {
-      duration
+    playlist: {
+      playlist,
+      playingIndex
     }
-  }: { player: IPlayerState }
+  }: { playlist: IPlaylistState }
 ) {
   return {
-    duration
+    playlist,
+    playingIndex
   }
 }
 
 function mapDispatchToProps(dispatch: Dispatch<Action>) {
   return {
     watchPlayerBoxAction: () => dispatch(watchPlayerBoxAction()),
-    openPlayerBoxAction: () => dispatch(openPlayerBoxAction())
+    openPlayerBoxAction: () => dispatch(openPlayerBoxAction()),
+    setPlayingIndexAction: (index: number) => dispatch(setPlayingIndexAction(index)),
+    openPlaylistModalAction: () => dispatch(openPlaylistModalAction()),
   }
 }
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(BottomLinshi)
+)(MusicPlayer)
