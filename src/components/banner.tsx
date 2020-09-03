@@ -6,6 +6,7 @@ import {
 } from 'react-native'
 
 import Swiper from 'react-native-swiper'
+import refService from '../common/js/refService'
 
 interface ISwiper {
   refName?: string,
@@ -14,7 +15,7 @@ interface ISwiper {
   autoplay: boolean,
   autoplayTimeout?: number,
   horizontal: boolean,
-  onIndexChanged?: () => {}
+  onIndexChanged?: (index: number) => any
 }
 
 interface IProps {
@@ -23,18 +24,26 @@ interface IProps {
 
 class Banner extends Component<IProps, any> {
   private config: any
-  private swiper: any
+  private _swiper: any
 
   constructor(props: IProps) {
     super(props)
     this.config = this.props.config || {}
   }
 
-  render() {
+  componentDidMount() {
+    refService.setRefBox(this.config.refName, this._swiper)
+  }
+
+  componentDidUpdate() {
+    // this._swiper.scrollBy(0, false)
+  }
+  
+  renderSwiper() {
     const { style, loop, autoplay, autoplayTimeout, horizontal, onIndexChanged } = this.config
     return (
       <Swiper
-        ref={(ref) => this.swiper = ref}
+        ref={(ref) => this._swiper = ref}
         style={style}
         loop={loop}
         autoplay={autoplay}
@@ -43,9 +52,17 @@ class Banner extends Component<IProps, any> {
         onIndexChanged={onIndexChanged}
         showsPagination={false}
         showsButtons={false}
+        loadMinimal={true}
       >
         {this.props.children}
       </Swiper>
+    )
+  }
+
+  render() {
+    
+    return (
+      this.renderSwiper()
     )
   }
 }

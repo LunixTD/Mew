@@ -1,38 +1,41 @@
-import React, { Component, ReactInstance, ClassicComponent } from 'react'
+import React, {Component, ReactInstance, ClassicComponent} from 'react'
 import {
   StyleSheet,
   View,
   Text,
   TouchableNativeFeedback,
-  Easing
+  Easing,
 } from 'react-native'
 import * as Animatable from 'react-native-animatable'
 import NavigationService from '../common/js/navigationService'
 
 import IconFont from './icon'
 
-import { deviceSize, ICON_SIZE_M, centering } from '../config/styleConfig'
-import { tabIconAnime } from '../config/animeConfig'
+import {ICON_SIZE_M, centering, deviceWidth} from '../config/styleConfig'
+import {tabIconAnime} from '../config/animeConfig'
 
-const navItems = [{
+const navItems = [
+  {
     tabName: '我的',
     tabIconName: 'tab-user',
-    tabIconColor: '#fff'
-  }, {
+    tabIconColor: '#fff',
+  },
+  {
     tabName: '主页',
     tabIconName: 'tab-home',
-    tabIconColor: '#fff'
-  }, {
+    tabIconColor: '#fff',
+  },
+  {
     tabName: '消息',
     tabIconName: 'tab-msg',
-    tabIconColor: '#fff'
-  }
+    tabIconColor: '#fff',
+  },
 ]
 
 interface IBarProps {
-  key?: any,
-  tabs?: any,
-  activeTab: number,
+  key?: any
+  tabs?: any
+  activeTab: number
   goToPage: (i: number) => void
 }
 
@@ -54,31 +57,27 @@ class TabBar extends Component<IBarProps, any> {
       <View style={styles.container}>
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
-          onPress={this.handleMenuPress}
-        >
+          onPress={this.handleMenuPress}>
           <View style={[styles.icon, styles.bar_l]}>
             <IconFont name="menu" size={26} color="#fff" />
           </View>
         </TouchableNativeFeedback>
         <View style={styles.bar_center}>
-          {
-            this.props.tabs.map((tab: string, i: number) =>
-              <Tab
-                key={i}
-                index={i}
-                color={navItems[i].tabIconColor}
-                tabName={navItems[i].tabName}
-                tabIconName={navItems[i].tabIconName}
-                activeTab={this.props.activeTab}
-                goToPage={this.props.goToPage}
-              />
-            )
-          }
+          {this.props.tabs.map((tab: string, i: number) => (
+            <Tab
+              key={i}
+              index={i}
+              color={navItems[i].tabIconColor}
+              tabName={navItems[i].tabName}
+              tabIconName={navItems[i].tabIconName}
+              activeTab={this.props.activeTab}
+              goToPage={this.props.goToPage}
+            />
+          ))}
         </View>
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
-          onPress={this.handleSearchPress}
-        >
+          onPress={this.handleSearchPress}>
           <View style={[styles.icon, styles.bar_r]}>
             <IconFont name="search" size={26} color="#fff" />
           </View>
@@ -89,10 +88,10 @@ class TabBar extends Component<IBarProps, any> {
 }
 
 interface ITabProps extends IBarProps {
-  index: number,
-  color: string,
-  tabName: string,
-  tabIconName: string,
+  index: number
+  color: string
+  tabName: string
+  tabIconName: string
 }
 
 class Tab extends Component<ITabProps, any> {
@@ -100,7 +99,7 @@ class Tab extends Component<ITabProps, any> {
   constructor(props: ITabProps) {
     super(props)
   }
-  
+
   handleTabPress = () => {
     this.anime.tabIconIn()
     if (this.props.index !== this.props.activeTab) {
@@ -113,16 +112,14 @@ class Tab extends Component<ITabProps, any> {
     return (
       <TouchableNativeFeedback
         onPress={this.handleTabPress}
-        background={TouchableNativeFeedback.SelectableBackgroundBorderless()}
-      >
+        background={TouchableNativeFeedback.SelectableBackgroundBorderless()}>
         <View style={styles.tab}>
           <Animatable.View
-            ref={(ref: any) => this.anime = ref}
+            ref={(ref: any) => (this.anime = ref)}
             animation={tabIconAnime}
             duration={300}
-            easing={Easing.bezier(.6,3,1,.83)}
-            useNativeDriver={true}
-          >
+            easing={Easing.bezier(0.6, 3, 1, 0.83)}
+            useNativeDriver={true}>
             <IconFont name={props.tabIconName} size={26} color={props.color} />
           </Animatable.View>
         </View>
@@ -131,7 +128,7 @@ class Tab extends Component<ITabProps, any> {
   }
 }
 
-const barWidth = deviceSize.width * 0.6
+const barWidth = deviceWidth * 0.6
 const styles = StyleSheet.create({
   // tabBar
   container: {
@@ -149,10 +146,10 @@ const styles = StyleSheet.create({
     ...centering,
   },
   bar_l: {
-    left: 10
+    left: 10,
   },
   bar_r: {
-    right: 10
+    right: 10,
   },
   bar_center: {
     width: barWidth,
@@ -164,7 +161,7 @@ const styles = StyleSheet.create({
   tab: {
     ...ICON_SIZE_M,
     ...centering,
-  }
+  },
 })
 
 export default TabBar

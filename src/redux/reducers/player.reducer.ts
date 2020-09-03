@@ -6,7 +6,7 @@ const initialState: IPlayerState = {
   currentTime: 0,
   duration: 0,
   sliderValue: 0,
-  isSliding: false
+  isSliding: false,
 }
 
 export default function (state = initialState, action: any) {

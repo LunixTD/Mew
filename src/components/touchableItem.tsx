@@ -7,13 +7,15 @@ import {
   TouchableHighlight,
   TouchableWithoutFeedback
 } from 'react-native'
-
-import { GAP_SIZE_S, COL_NUM, deviceSize, FONT_COLOR_M, FONT_SIZE_M } from '../config/styleConfig'
+import { IRecommendAlbum, IAlbum } from '../config/interfaces'
+import { GAP_SIZE_S, COL_NUM, FONT_COLOR_M, FONT_SIZE_M, deviceWidth } from '../config/styleConfig'
+import { get } from 'lodash'
 
 interface IProps {
   colNum: number,
-  type?: 'recommend' | undefined,
-  desc?: string
+  type?: 'recommend' | string
+  data: IRecommendAlbum,
+  onPress: (album: IRecommendAlbum) => any
 }
 
 class TouchItem extends Component<IProps, any> {
@@ -32,24 +34,37 @@ class TouchItem extends Component<IProps, any> {
   }
   
   renderDesc = () => {
+    const desc = this.props.data.name
     return (
-      <Text style={styles.imageDesc}>{ this.props.desc }流行歌曲集录</Text>
+      <Text 
+        style={styles.imageDesc}
+        numberOfLines={2}
+        ellipsizeMode='tail'
+      >{ desc ? desc : '' }</Text>
     )
   }
 
+  onItemPress = () => {
+    this.props.onPress(this.props.data)
+  }
+
   render() {
+    const data = this.props.data
+    const coverImgUrl = get(data, 'coverImgUrl', data.picUrl) + '?param=300y300'
     return (
-      <TouchableWithoutFeedback>
+      <TouchableWithoutFeedback
+        onPress={this.onItemPress}
+      >
         <View style={styles.itemContainer}>
           <TouchableHighlight
             underlayColor='rgba(0,0,0,0.6)'
             style={this.imageStyle}
-            onPress={() => {}}
+            onPress={this.onItemPress}
           >
             <View style={styles.imageContainer}>
               <Image
                 style={styles.image}
-                source={require('../../assets/imgs/2.jpg')}
+                source={{ uri: coverImgUrl }}
                 resizeMode="cover"
               />
             </View>
@@ -61,14 +76,14 @@ class TouchItem extends Component<IProps, any> {
   }
 }
 
-const { width } = deviceSize
-const touchItemSize = (width - GAP_SIZE_S * (COL_NUM + 1)) / COL_NUM
+const touchItemSize = (deviceWidth - GAP_SIZE_S * (COL_NUM + 1)) / COL_NUM
+const textHeight = 40
 const styles = StyleSheet.create({
   itemContainer: {
     width: touchItemSize,
-    // height: touchItemSize,
+    height: touchItemSize + textHeight,
+    marginBottom: 20,
     borderRadius: 2,
-    // backgroundColor: '#fff',
     overflow: 'hidden'
   },
   normalImage: {
@@ -89,6 +104,7 @@ const styles = StyleSheet.create({
     height: touchItemSize
   },
   imageDesc: {
+    height: textHeight,
     color: FONT_COLOR_M,
     fontSize: FONT_SIZE_M,
     paddingTop: 4,
